@@ -1,0 +1,15 @@
+[project]
+name = "manuscript-formatter"
+version = "0.1.0"
+description = "Reformat dental research manuscripts for journal submission"
+requires-python = ">=3.10"
+dependencies = [
+    "python-docx>=1.1",
+    "citeproc-py>=0.6",
+    "bibtexparser>=1.4,<2",
+    "pyyaml>=6.0",
+    "rapidfuzz>=3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]

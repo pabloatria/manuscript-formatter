@@ -1,0 +1,31 @@
+__pycache__/
+*.py[cod]
+.Python
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+.vscode/
+.idea/
+*.swp
+
+# Local outputs
+*.docx
+!examples/**/*.docx
+!tests/fixtures/**/*.docx
+*.pdf
+!examples/**/*.pdf
+
+# Local reference exports — never commit a real library
+*.bib
+*.ris
+*.enl
+!tests/fixtures/**/*.bib
+!tests/fixtures/**/*.ris
