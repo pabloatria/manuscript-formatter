@@ -1,6 +1,51 @@
-"""Generate a small .docx fixture for tests. Run once, commit the .docx."""
+"""Generate a small .docx fixture for tests. Run once, commit the .docx.
+
+After python-docx writes the file, we rewrite the ZIP container so that
+ZIP modtimes are fixed at 2000-01-01 and the dcterms:created/modified
+timestamps in docProps/core.xml are pinned to the same epoch. This makes
+the binary byte-stable across rebuilds — important for Task 18's
+text-preservation invariant test.
+"""
+import re
+import shutil
+import tempfile
+import zipfile
+from datetime import datetime, timezone
 from pathlib import Path
+
 from docx import Document
+
+EPOCH_ISO = (datetime(2000, 1, 1, tzinfo=timezone.utc)
+             .isoformat().replace("+00:00", "Z"))
+EPOCH_ZIP = (2000, 1, 1, 0, 0, 0)
+
+
+def _normalize_docx(path: Path) -> None:
+    """Zero out volatile metadata so the fixture is byte-stable."""
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td) / "out.docx"
+        with zipfile.ZipFile(path) as zin, \
+             zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zout:
+            for info in sorted(zin.infolist(), key=lambda i: i.filename):
+                data = zin.read(info.filename)
+                if info.filename == "docProps/core.xml":
+                    data = re.sub(
+                        rb"<dcterms:created[^>]*>[^<]*</dcterms:created>",
+                        f'<dcterms:created xsi:type="dcterms:W3CDTF">'
+                        f"{EPOCH_ISO}</dcterms:created>".encode(),
+                        data,
+                    )
+                    data = re.sub(
+                        rb"<dcterms:modified[^>]*>[^<]*</dcterms:modified>",
+                        f'<dcterms:modified xsi:type="dcterms:W3CDTF">'
+                        f"{EPOCH_ISO}</dcterms:modified>".encode(),
+                        data,
+                    )
+                new_info = zipfile.ZipInfo(info.filename, date_time=EPOCH_ZIP)
+                new_info.compress_type = zipfile.ZIP_DEFLATED
+                zout.writestr(new_info, data)
+        shutil.move(str(tmp), str(path))
+
 
 def make_jpd_style_manuscript(out_path: Path):
     doc = Document()
@@ -23,6 +68,8 @@ def make_jpd_style_manuscript(out_path: Path):
     doc.add_heading("Conclusion", level=1)  # alias for "Conclusions"
     doc.add_paragraph("Endocrowns are a reliable alternative.")
     doc.save(out_path)
+    _normalize_docx(out_path)
+
 
 if __name__ == "__main__":
     out = Path(__file__).resolve().parent / "minimal_manuscript.docx"
