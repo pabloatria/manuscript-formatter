@@ -61,3 +61,34 @@ def _load_csl_json(path: Path) -> list[dict]:
                 f"{path}: entry {i} missing required 'id' field"
             )
     return data
+
+
+def render_bibliography(items: list[dict], csl_path: Path) -> list[str]:
+    """Render the given CSL JSON items as bibliography lines using the
+    given CSL style. Returns one rendered string per entry, in the order
+    the style produces them (Vancouver-family preserves input order;
+    author-year styles sort alphabetically).
+
+    Returns [] for an empty input list. Raises if the CSL file is
+    unparseable or if any item is missing the required `id` field.
+    """
+    if not items:
+        return []
+
+    # citeproc-py is heavyweight; lazy-import so users who only validate
+    # word counts or reformat headings don't pay the import cost.
+    from citeproc import (CitationStylesStyle, CitationStylesBibliography,
+                          formatter, Citation, CitationItem)
+    from citeproc.source.json import CiteProcJSON
+
+    bib_source = CiteProcJSON(items)
+    style = CitationStylesStyle(str(csl_path), validate=False)
+    bib = CitationStylesBibliography(style, bib_source, formatter.plain)
+
+    # Register one citation per item so each appears in the bibliography.
+    for item in items:
+        if "id" not in item:
+            raise ValueError(f"CSL item missing required 'id' field: {item}")
+        bib.register(Citation([CitationItem(item["id"])]))
+
+    return [str(entry) for entry in bib.bibliography()]
