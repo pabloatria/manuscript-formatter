@@ -1,0 +1,19 @@
+[
+  {
+    "id": "smith2024",
+    "type": "article-journal",
+    "title": "Endocrowns in posterior teeth",
+    "author": [{"family": "Smith", "given": "J"}, {"family": "Doe", "given": "A"}],
+    "container-title": "J Prosthet Dent",
+    "issued": {"date-parts": [[2024]]},
+    "DOI": "10.1016/j.test.2024.001"
+  },
+  {
+    "id": "lee2023",
+    "type": "article-journal",
+    "title": "5-year survival of lithium disilicate",
+    "author": [{"family": "Lee", "given": "M"}],
+    "container-title": "Clin Oral Implants Res",
+    "issued": {"date-parts": [[2023]]}
+  }
+]
