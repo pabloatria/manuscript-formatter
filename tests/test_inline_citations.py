@@ -10,34 +10,26 @@ CSL = (Path(__file__).resolve().parent.parent / "scripts" / "csl"
 
 
 def test_inline_single_citation_returns_number_only():
-    """Vancouver-superscript style: a single in-text cite should render as
-    the citation number, not the author family name."""
+    """Vancouver-superscript style: a single in-text cite is the number."""
     refs = load_references(FIXT / "sample_zotero.json")
     out = render_inline_citations([["smith2024"]], refs, CSL)
-    assert len(out) == 1
-    # Vancouver-superscript output is the number alone (or wrapped in
-    # superscript markup the formatter renders as plain text).
-    assert "1" in out[0]
-    assert "Smith" not in out[0]
+    assert out == ["1"]
 
 
-def test_inline_multi_citation_groups_produce_separate_outputs():
+def test_inline_multi_citation_groups_assign_distinct_numbers():
+    """Two separate citation points get sequential numbers per the CSL's
+    citation-sequence numbering."""
     refs = load_references(FIXT / "sample_zotero.json")
     out = render_inline_citations([["smith2024"], ["lee2023"]], refs, CSL)
-    assert len(out) == 2
-    # Each group renders independently
-    assert out[0] != out[1]
+    assert out == ["1", "2"]
 
 
 def test_inline_grouped_citations_render_compactly():
-    """Two ids in one citation group should produce one combined inline
-    citation (e.g., '1,2' or '1-2'), not two separate strings."""
+    """Two ids in one citation group render as a single comma-joined
+    string."""
     refs = load_references(FIXT / "sample_zotero.json")
     out = render_inline_citations([["smith2024", "lee2023"]], refs, CSL)
-    assert len(out) == 1
-    # Both numbers should appear in the single rendered string
-    rendered = out[0]
-    assert "1" in rendered and "2" in rendered
+    assert out == ["1,2"]
 
 
 def test_inline_empty_groups_returns_empty():
@@ -45,13 +37,41 @@ def test_inline_empty_groups_returns_empty():
     assert render_inline_citations([], refs, CSL) == []
 
 
-def test_inline_unknown_id_raises_or_renders_marker():
-    """If a citation group references an id not in items, citeproc-py
-    will produce a '???' marker. Confirm the function doesn't crash —
-    the caller should detect '???' in the report."""
+def test_inline_unknown_id_renders_without_raising():
+    """citeproc-py renders unknown ids as `<cite-key>?` rather than
+    raising. Confirm we get a string back (callers should use
+    collect_unresolved to detect, not string-match)."""
     refs = load_references(FIXT / "sample_zotero.json")
     out = render_inline_citations([["does-not-exist"]], refs, CSL)
     assert len(out) == 1
-    # citeproc-py renders unknown citations as "???" or similar marker
-    # — we just want to confirm we got a string back, not an exception.
     assert isinstance(out[0], str)
+
+
+def test_inline_collect_unresolved_returns_tuple():
+    """When collect_unresolved=True, the function returns a (rendered,
+    unresolved) tuple. Unresolved ids must include 'does-not-exist'."""
+    refs = load_references(FIXT / "sample_zotero.json")
+    rendered, unresolved = render_inline_citations(
+        [["smith2024"], ["does-not-exist"]], refs, CSL,
+        collect_unresolved=True,
+    )
+    assert len(rendered) == 2
+    assert "does-not-exist" in unresolved
+
+
+def test_inline_collect_unresolved_is_empty_when_all_resolve():
+    refs = load_references(FIXT / "sample_zotero.json")
+    rendered, unresolved = render_inline_citations(
+        [["smith2024"]], refs, CSL, collect_unresolved=True,
+    )
+    assert rendered == ["1"]
+    assert unresolved == []
+
+
+def test_inline_registration_order_drives_numbering():
+    """Register lee2023 first, then smith2024; assert lee gets '1'."""
+    refs = load_references(FIXT / "sample_zotero.json")
+    out = render_inline_citations(
+        [["lee2023"], ["smith2024"]], refs, CSL,
+    )
+    assert out == ["1", "2"]

@@ -98,18 +98,28 @@ def render_inline_citations(
     citation_groups: list[list[str]],
     items: list[dict],
     csl_path: Path,
-) -> list[str]:
+    *,
+    collect_unresolved: bool = False,
+):
     """Render each in-text citation group using the given CSL style.
 
     A citation 'group' is what appears at one in-text citation point —
-    e.g., the citation `[1, 3-5]` is one group with three ids. The output
+    e.g. the citation `[1, 3-5]` is one group with three ids. The output
     is one rendered string per group, in the same order as the input.
 
-    Empty input returns []. Unknown ids are rendered as the style's
-    fallback marker (typically "???") so the caller can audit them.
+    Empty input returns []. Unresolved citation ids (ones not present in
+    `items`) are rendered by citeproc-py as `<cite-key>?` and the same
+    ids are surfaced via the warning callback so callers can audit them
+    without string-sniffing the output.
+
+    Returns:
+        list[str] when collect_unresolved is False (default).
+        tuple[list[str], list[str]] when collect_unresolved is True —
+            (rendered_strings, unresolved_cite_keys). The unresolved list
+            is in the order citeproc emits warnings.
     """
     if not citation_groups:
-        return []
+        return ([], []) if collect_unresolved else []
 
     from citeproc import (CitationStylesStyle, CitationStylesBibliography,
                           formatter, Citation, CitationItem)
@@ -119,15 +129,21 @@ def render_inline_citations(
     style = CitationStylesStyle(str(csl_path), validate=False)
     bib = CitationStylesBibliography(style, bib_source, formatter.plain)
 
-    # Register all citations first so citeproc-py can compute number
-    # assignments; only after registration is bib.cite() valid.
     citations = []
     for group in citation_groups:
         cit = Citation([CitationItem(cid) for cid in group])
         bib.register(cit)
         citations.append(cit)
 
-    # Render each. The third arg to bib.cite is a callback for unresolved
-    # citation warnings; we pass a no-op since we surface "???" markers
-    # in the output strings.
-    return [str(bib.cite(c, lambda *args, **kwargs: None)) for c in citations]
+    unresolved: list[str] = []
+
+    def _warn(citation_item):
+        # citeproc-py invokes this with the unresolved CitationItem;
+        # its `key` attribute is the cite id we couldn't find in items.
+        try:
+            unresolved.append(citation_item.key)
+        except AttributeError:
+            unresolved.append(str(citation_item))
+
+    rendered = [str(bib.cite(c, _warn)) for c in citations]
+    return (rendered, unresolved) if collect_unresolved else rendered
