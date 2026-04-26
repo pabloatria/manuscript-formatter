@@ -50,3 +50,22 @@ def test_section_missing_canonical_raises(tmp_path):
     )
     with pytest.raises(JournalConfigError, match="missing 'canonical'"):
         load_journal("missing_canon", config_dir=tmp_path)
+
+
+JOURNAL_SLUGS = [
+    "jpd", "jomi", "coir", "jdr", "jada", "j-dent",
+    "int-j-prosthodont", "j-periodontol", "j-endod",
+    "oper-dent", "jerd",
+]
+
+
+@pytest.mark.parametrize("slug", JOURNAL_SLUGS)
+def test_each_journal_loads_and_validates(slug):
+    cfg = load_journal(slug, config_dir=CONFIG_DIR)
+    assert cfg["name"]
+    assert cfg["abbreviation"]
+    assert cfg["sections"]
+    assert cfg["reference_style"].endswith(".csl")
+    # Abstract block has the structured/unstructured marker
+    assert cfg["abstract"]["format"] in ("structured", "unstructured")
+    assert isinstance(cfg["abstract"]["word_limit"], int)

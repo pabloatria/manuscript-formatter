@@ -1,0 +1,77 @@
+name: International Journal of Oral & Maxillofacial Implants
+abbreviation: J Oral Maxillofac Implants
+sections:
+  - canonical: abstract
+    display: Abstract
+    aliases: [Abstract, Summary]
+    word_limit: 250
+    required: true
+  - canonical: introduction
+    display: Introduction
+    aliases: [Introduction, Background]
+    word_limit: null
+    required: true
+  - canonical: purpose
+    display: Purpose
+    aliases: [Purpose, Aim, Objective, Objectives]
+    word_limit: null
+    required: true
+  - canonical: methods
+    display: Materials and Methods
+    aliases: [Methods, Materials and Methods, Material and Methods]
+    word_limit: null
+    required: true
+  - canonical: results
+    display: Results
+    aliases: [Results, Findings]
+    word_limit: null
+    required: true
+  - canonical: discussion
+    display: Discussion
+    aliases: [Discussion]
+    word_limit: null
+    required: true
+  - canonical: conclusions
+    display: Conclusions
+    aliases: [Conclusion, Conclusions]
+    word_limit: null
+    required: true
+abstract:
+  format: structured
+  subsections:
+    - Purpose
+    - Materials and Methods
+    - Results
+    - Conclusion
+  word_limit: 250
+total_word_limit: 4500
+# TODO verify reference_style against current author guidelines (CSL filename
+# may differ in upstream repo; vancouver.csl is a safe fallback)
+reference_style: journal-of-oral-and-maxillofacial-implants.csl
+title_page:
+  separate_file: true
+  required_blocks: [authors, affiliations, corresponding_author, conflicts, funding, irb]
+figures:
+  embedded: false
+  legend_format: "Fig {n}. {caption}"
+  numbering: "Fig {n}"
+guidelines:
+  font: "Times New Roman"
+  font_size: 12
+  line_spacing: 2.0
+  margins_cm: 2.54
+  page_numbers: true
+cover_letter_template: |
+  Dear {editor},
+
+  We submit for your consideration our manuscript titled "{title}", which
+  reports {methods_summary}. Our findings — {results_summary} — represent
+  [NOVELTY: 1-2 sentences explaining what's new and why the International
+  Journal of Oral & Maxillofacial Implants is the right home].
+
+  {authors_summary}. The manuscript has not been published or submitted
+  elsewhere; all authors have approved the submission. Conflicts of interest
+  and funding sources are disclosed on the title page.
+
+  Sincerely,
+  {corresponding_author}
