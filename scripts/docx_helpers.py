@@ -50,11 +50,24 @@ def read_headings(docx_path: Path) -> list[Heading]:
 
 
 # Below this score (0..100), a heading is treated as unmapped (canonical=None).
-FUZZY_THRESHOLD = 80
+# 82 chosen to exclude false-positives like fuzz.ratio("Funding", "Findings")
+# (which scores exactly 80) while keeping legitimate fuzzy matches above
+# threshold (e.g., "Conclussion" -> "Conclusions" scores 90.9).
+FUZZY_THRESHOLD = 82
 
 
 @dataclass(frozen=True)
 class MappedHeading:
+    """A detected heading paired with its journal-canonical mapping.
+
+    `text` is the heading content as it currently exists. `original_text` is
+    the verbatim string read from the input document and is preserved across
+    any future normalization (case, whitespace, punctuation) that downstream
+    code might apply to `text`. Today the two are identical; the split exists
+    so the audit trail in the validation report can always show what the
+    user actually wrote, even after section-rename has overwritten `text`
+    with the canonical form.
+    """
     level: int
     text: str
     paragraph_index: int
