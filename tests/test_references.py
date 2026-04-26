@@ -31,3 +31,20 @@ def test_csl_json_must_be_a_list(tmp_path):
     bad.write_text('{"not": "an array"}', encoding="utf-8")
     with pytest.raises(ReferenceFormatError, match="expected JSON array"):
         load_references(bad)
+
+
+def test_csl_entry_must_be_dict(tmp_path):
+    """A CSL array containing a non-object entry is rejected."""
+    bad = tmp_path / "bad.json"
+    bad.write_text('[{"id": "ok"}, "not-an-object"]', encoding="utf-8")
+    with pytest.raises(ReferenceFormatError, match="entry 1 is not"):
+        load_references(bad)
+
+
+def test_csl_entry_must_have_id(tmp_path):
+    """citeproc-py registers citations by id; an entry without one would
+    fail opaquely deep in the renderer. Catch it at intake."""
+    bad = tmp_path / "bad.json"
+    bad.write_text('[{"id": "ok"}, {"title": "no id here"}]', encoding="utf-8")
+    with pytest.raises(ReferenceFormatError, match="entry 1 missing required 'id'"):
+        load_references(bad)

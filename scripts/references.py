@@ -27,17 +27,16 @@ def load_references(path: Path) -> list[dict]:
     if suffix == ".json":
         return _load_csl_json(path)
     if suffix == ".bib":
-        # Will be wired in Task 8 — fail clearly until then.
         raise ReferenceFormatError(
-            f"BibTeX (.bib) intake not yet implemented (Task 8): {path}"
+            f"BibTeX (.bib) intake not yet implemented: {path}"
         )
     if suffix == ".xml":
         raise ReferenceFormatError(
-            f"EndNote XML (.xml) intake not yet implemented (Task 9): {path}"
+            f"EndNote XML (.xml) intake not yet implemented: {path}"
         )
     if suffix == ".ris":
         raise ReferenceFormatError(
-            f"RIS (.ris) intake not yet implemented (Task 10): {path}"
+            f"RIS (.ris) intake not yet implemented: {path}"
         )
     raise ReferenceFormatError(
         f"unsupported reference export format: {suffix or '(no extension)'} "
@@ -52,7 +51,16 @@ def _load_csl_json(path: Path) -> list[dict]:
         try:
             data = json.load(f)
         except json.JSONDecodeError as e:
-            raise ReferenceFormatError(f"{path}: invalid JSON — {e}") from e
+            raise ReferenceFormatError(f"{path}: invalid JSON: {e}") from e
     if not isinstance(data, list):
         raise ReferenceFormatError(f"{path}: expected JSON array of CSL items")
+    for i, entry in enumerate(data):
+        if not isinstance(entry, dict):
+            raise ReferenceFormatError(
+                f"{path}: entry {i} is not a JSON object"
+            )
+        if "id" not in entry:
+            raise ReferenceFormatError(
+                f"{path}: entry {i} missing required 'id' field"
+            )
     return data
