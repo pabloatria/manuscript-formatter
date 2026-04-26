@@ -2,8 +2,9 @@
 
 > Reformat finished .docx manuscripts for any of 11 dental journals — without touching your prose.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Try in ChatGPT](https://img.shields.io/badge/Try%20in-ChatGPT-10A37F?logo=openai&logoColor=white)](https://chatgpt.com/g/g-XXXXX-manuscript-formatter)
 [![Claude Skill](https://img.shields.io/badge/Claude-Skill-D97757)](https://docs.claude.com/en/docs/agents-and-tools/agent-skills)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776AB.svg)](https://www.python.org/downloads/)
 [![Security](https://img.shields.io/badge/security-audited-success.svg)](./SECURITY.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/pulls)
@@ -38,6 +39,10 @@ For any input `.docx` and a target journal slug, you get three outputs in `~/Dow
 
 ## Install
 
+Pick your AI. Same 11 journals, same prose-preservation guarantee, same `scripts/` tree under the hood.
+
+### Claude (recommended — runs locally)
+
 **Requirements:** Python 3.10+ and Claude Code or Claude Desktop with skill support enabled.
 
 ```bash
@@ -50,6 +55,15 @@ cd ~/.claude/skills/manuscript-formatter
 ```
 
 The installer handles `python-docx`, `citeproc-py`, `bibtexparser`, `pyyaml`, and `rapidfuzz` (with the `--break-system-packages` workaround for newer macOS Pythons).
+
+### ChatGPT (zero-install for end users)
+
+Use the published Custom GPT directly:
+**[chatgpt.com/g/g-XXXXX-manuscript-formatter](https://chatgpt.com/g/g-XXXXX-manuscript-formatter)** *(URL filled in once the GPT is published to the store)*
+
+Requires ChatGPT Plus. Attach your `.docx` manuscript and reference-manager export to the chat, name a journal — get the reformatted `.docx`, validation report, and optional cover letter back as downloads.
+
+Prefer your own copy (branded differently, or as a backup)? Full self-hosting instructions in [`chatgpt/SETUP.md`](./chatgpt/SETUP.md) — ~10 minutes. Tradeoffs vs. the Claude skill (Mendeley BibTeX caveat, session-bound `/mnt/data/`) are documented there.
 
 ## Use it (Claude)
 
@@ -149,12 +163,17 @@ manuscript-formatter/
 ├── README.md             # This file
 ├── LICENSE               # MIT
 ├── SECURITY.md           # Threat model, dependencies, vulnerability disclosure
-├── install.sh            # macOS/Linux dependency installer
+├── install.sh            # macOS/Linux dependency installer (Claude path)
 ├── pyproject.toml
 ├── pytest.ini
+├── chatgpt/              # Custom GPT distribution (ChatGPT path)
+│   ├── SETUP.md          # Step-by-step setup for the ChatGPT Custom GPT
+│   ├── CUSTOM_GPT_INSTRUCTIONS.md   # Paste into the GPT's Instructions field
+│   └── build_zip.sh      # Reproducible build of the Knowledge bundle
 ├── docs/
-│   └── plans/            # Design docs and implementation plans
-├── scripts/
+│   ├── plans/            # Design docs and implementation plans
+│   └── maintainer-notes.md          # Repo-owner workflow (dual distribution)
+├── scripts/              # Shared by both platforms
 │   ├── format_manuscript.py     # CLI entrypoint
 │   ├── journal_config.py        # YAML loader + JournalConfigError
 │   ├── references.py            # Multi-format reference loader
@@ -166,7 +185,8 @@ manuscript-formatter/
 │   ├── report.py                # Markdown audit-trail writer
 │   ├── cover_letter.py          # Cover-letter template renderer
 │   ├── journals/                # 11 YAML configs (one per journal)
-│   └── csl/                     # 11 bundled CSL files
+│   └── csl/                     # 11 bundled CSL files (also bundled into the
+│                                # ChatGPT Knowledge zip via build_zip.sh)
 └── tests/                # 146 pytest tests
 ```
 
