@@ -4,6 +4,7 @@ Imported lazily by scripts/references.py only when a .bib file is being
 loaded, so users without bibtexparser installed don't pay the import cost
 unless they need it.
 """
+import re
 from pathlib import Path
 
 import bibtexparser
@@ -12,6 +13,9 @@ import bibtexparser
 # back to 'document' which citeproc-py renders generically.
 TYPE_MAP = {
     "article": "article-journal",
+    "review": "article-journal",
+    "editorial": "article-journal",
+    "case-report": "article-journal",
     "book": "book",
     "inbook": "chapter",
     "incollection": "chapter",
@@ -19,6 +23,7 @@ TYPE_MAP = {
     "conference": "paper-conference",
     "phdthesis": "thesis",
     "mastersthesis": "thesis",
+    "thesis": "thesis",
     "techreport": "report",
     "manual": "report",
     "misc": "document",
@@ -30,23 +35,33 @@ TYPE_MAP = {
 
 def _split_authors(s: str) -> list[dict]:
     """Parse a BibTeX author field ('Last1, First1 and Last2, First2 ...')
-    into CSL author dicts. Falls back to a 'family' single-name when the
-    entry has no comma."""
+    into CSL author dicts. Drops the BibTeX 'and others' marker (which
+    indicates et al., not a literal coauthor named 'others'). Falls back
+    to a 'family' single-name when an entry has no comma."""
     out = []
     for full in s.split(" and "):
         full = full.strip()
         if not full:
             continue
+        if full.lower() in ("others", "et al.", "et al"):
+            # BibTeX et-al marker — render as CSL "literal" so citeproc
+            # recognizes it rather than treating "others" as a surname.
+            out.append({"literal": "et al."})
+            continue
         if "," in full:
             family, _, given = full.partition(",")
-            out.append({"family": family.strip(), "given": given.strip()})
+            family = family.strip().strip("{}").strip()
+            given = given.strip().strip("{}").strip()
+            out.append({"family": family, "given": given})
         else:
-            # No comma: treat the last whitespace-separated token as family.
+            # No comma: treat the last whitespace-separated token as family
+            # (preserves "de la Cruz" style only when comma is present).
             parts = full.rsplit(" ", 1)
             if len(parts) == 2:
-                out.append({"family": parts[1], "given": parts[0]})
+                out.append({"family": parts[1].strip("{}"),
+                             "given": parts[0].strip("{}")})
             else:
-                out.append({"family": full, "given": ""})
+                out.append({"family": full.strip("{}"), "given": ""})
     return out
 
 
@@ -59,8 +74,13 @@ def bibtex_to_csl(path: Path) -> list[dict]:
         item = {
             "id": e.get("ID", ""),
             "type": TYPE_MAP.get((e.get("ENTRYTYPE") or "misc").lower(), "document"),
-            "title": (e.get("title") or "").strip("{}").strip(),
+            "title": (e.get("title") or "").replace("{", "").replace("}", "").strip(),
         }
+        if not item["id"]:
+            from .references import ReferenceFormatError
+            raise ReferenceFormatError(
+                f"BibTeX entry in {path} has no citation key"
+            )
         if "author" in e:
             authors = _split_authors(e["author"])
             if authors:
@@ -68,10 +88,12 @@ def bibtex_to_csl(path: Path) -> list[dict]:
         if "journal" in e:
             item["container-title"] = e["journal"]
         if "year" in e:
-            try:
-                item["issued"] = {"date-parts": [[int(e["year"])]]}
-            except (TypeError, ValueError):
-                pass
+            year_text = str(e["year"])
+            m = re.match(r"\d{4}", year_text)
+            if m:
+                item["issued"] = {"date-parts": [[int(m.group())]]}
+            elif year_text.lower().strip() in ("in press", "in-press", "inpress"):
+                item["issued"] = {"literal": "in press"}
         if "doi" in e:
             item["DOI"] = e["doi"]
         if "url" in e:

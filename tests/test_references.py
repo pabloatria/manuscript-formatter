@@ -52,7 +52,7 @@ def test_csl_entry_must_have_id(tmp_path):
 
 def test_bibtex_loads_via_extension():
     refs = load_references(FIXT / "sample.bib")
-    assert len(refs) == 2
+    assert len(refs) == 3
     by_id = {r["id"]: r for r in refs}
     assert "smith2024" in by_id
     assert by_id["smith2024"]["title"] == "Endocrowns in posterior teeth"
@@ -67,3 +67,32 @@ def test_bibtex_loads_via_extension():
     assert by_id["smith2024"]["DOI"] == "10.1016/j.test.2024.001"
     # Type is article-journal
     assert by_id["smith2024"]["type"] == "article-journal"
+
+
+def test_bibtex_drops_others_marker():
+    """A 'and others' BibTeX coauthor must not render as a literal author."""
+    refs = load_references(FIXT / "sample.bib")
+    by_id = {r["id"]: r for r in refs}
+    kelly = by_id["kelly2020"]
+    assert any(a.get("literal") == "et al." for a in kelly["author"])
+    assert all(a.get("family") != "others" for a in kelly["author"])
+
+
+def test_bibtex_strips_internal_braces_from_title():
+    """BibTeX case-protection braces inside titles must not survive into CSL."""
+    refs = load_references(FIXT / "sample.bib")
+    by_id = {r["id"]: r for r in refs}
+    assert by_id["kelly2020"]["title"] == "Dental ceramics: A review"
+
+
+def test_bibtex_year_with_disambiguation_suffix():
+    """Mendeley emits years like '2020a' — extract leading 4 digits."""
+    refs = load_references(FIXT / "sample.bib")
+    by_id = {r["id"]: r for r in refs}
+    assert by_id["kelly2020"]["issued"]["date-parts"][0][0] == 2020
+
+
+def test_bibtex_book_type_maps_correctly():
+    refs = load_references(FIXT / "sample.bib")
+    by_id = {r["id"]: r for r in refs}
+    assert by_id["kelly2020"]["type"] == "book"
