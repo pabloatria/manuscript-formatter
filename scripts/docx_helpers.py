@@ -5,6 +5,7 @@ import re
 
 from docx import Document
 from docx.text.paragraph import Paragraph
+from rapidfuzz import fuzz
 
 # Match exactly "Heading 1" through "Heading 9" — refuses "Heading 1 Char"
 # (Word's auto-generated linked character style), "Heading 12", localized
@@ -45,4 +46,50 @@ def read_headings(docx_path: Path) -> list[Heading]:
         lv = _heading_level(p)
         if lv is not None:
             out.append(Heading(level=lv, text=p.text.strip(), paragraph_index=idx))
+    return out
+
+
+# Below this score (0..100), a heading is treated as unmapped (canonical=None).
+FUZZY_THRESHOLD = 80
+
+
+@dataclass(frozen=True)
+class MappedHeading:
+    level: int
+    text: str
+    paragraph_index: int
+    canonical: str | None
+    confidence: float
+    original_text: str
+
+
+def map_headings_to_canonical(
+    headings: list[Heading],
+    sections_config: list[dict],
+) -> list[MappedHeading]:
+    """For each detected heading, find the best canonical match across all
+    aliases declared in the journal config.
+
+    Returns parallel MappedHeading list. Unmapped headings keep
+    canonical=None and original_text preserved so the caller can leave them
+    untouched in the output document.
+    """
+    out: list[MappedHeading] = []
+    for h in headings:
+        best_canon: str | None = None
+        best_score = 0.0
+        for sec in sections_config:
+            for alias in sec.get("aliases", []):
+                score = fuzz.ratio(h.text.lower(), alias.lower())
+                if score > best_score:
+                    best_score = score
+                    best_canon = sec["canonical"]
+        out.append(MappedHeading(
+            level=h.level,
+            text=h.text,
+            paragraph_index=h.paragraph_index,
+            canonical=best_canon if best_score >= FUZZY_THRESHOLD else None,
+            confidence=best_score / 100.0,
+            original_text=h.text,
+        ))
     return out
