@@ -121,6 +121,11 @@ def reformat_sections(
     canonical section in journal_cfg. Unmapped headings are left exactly
     as written.
     """
+    if Path(input_path).resolve() == Path(output_path).resolve():
+        raise ValueError(
+            "reformat_sections does not support in-place rewrite; "
+            "pass a distinct output_path"
+        )
     doc = Document(input_path)
     headings = read_headings(input_path)
     mapped = map_headings_to_canonical(headings, journal_cfg["sections"])
@@ -129,9 +134,20 @@ def reformat_sections(
     for m in mapped:
         if m.canonical is None:
             continue  # leave unmapped headings exactly as written
-        target_text = canon_to_display.get(m.canonical)
+        if m.canonical not in canon_to_display:
+            # Implementation invariant: every canonical we see was mapped from
+            # a section in journal_cfg["sections"], so this should be
+            # impossible. Raise rather than silently skip.
+            raise ValueError(
+                f"journal config missing 'display' for canonical "
+                f"section {m.canonical!r}"
+            )
+        target_text = canon_to_display[m.canonical]
         if not target_text:
-            continue  # config has canonical but no display — leave alone
+            raise ValueError(
+                f"journal config has empty 'display' for canonical "
+                f"section {m.canonical!r}"
+            )
         para = doc.paragraphs[m.paragraph_index]
         # Replace text in-place without disturbing the paragraph's style.
         # Clear all runs, then write the new text into the first run (or
@@ -141,6 +157,11 @@ def reformat_sections(
             run.text = ""
         if para.runs:
             para.runs[0].text = target_text
+            # Drop trailing empty runs to avoid XML cruft when the original
+            # heading had multiple runs (e.g. partial bold/italic). Without
+            # this, repeated reformat passes accumulate zero-length runs.
+            for stale in list(para.runs[1:]):
+                stale._element.getparent().remove(stale._element)
         else:
             para.add_run(target_text)
     doc.save(output_path)
