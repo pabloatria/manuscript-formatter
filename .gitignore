@@ -30,3 +30,6 @@ venv/
 !tests/fixtures/**/*.bib
 !tests/fixtures/**/*.ris
 !tests/fixtures/**/*.enl
+
+# Build artifact for the ChatGPT Custom GPT (regenerate via chatgpt/build_zip.sh)
+manuscript_formatter.zip
