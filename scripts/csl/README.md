@@ -46,3 +46,22 @@ curl -sL -o "scripts/csl/<journal-slug>.csl" \
 
 If a journal already has an *independent* CSL upstream (no dependent
 shim), just fetch it directly under its own filename.
+
+## Vancouver fallback
+
+Some journal-specific CSL files do not exist upstream (neither as an
+independent style nor as a dependent shim). In those cases we bundle
+the resolved Vancouver style — upstream filename
+[`nlm-citation-sequence.csl`][4], which the Author Instructions for
+these journals point to as a compatible numbered citation format —
+under the journal's intended filename. The journal's
+`reference_style` value is left unchanged so future upstream additions
+can be picked up just by re-running the fetch script.
+
+[4]: https://github.com/citation-style-language/styles/blob/master/nlm-citation-sequence.csl
+
+Files whose contents are currently the Vancouver style:
+
+- `journal-of-oral-and-maxillofacial-implants.csl` (JOMI)
+- `the-international-journal-of-prosthodontics.csl` (Int J Prosthodont)
+- `journal-of-esthetic-and-restorative-dentistry.csl` (JERD)
