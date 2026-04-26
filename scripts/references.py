@@ -33,9 +33,8 @@ def load_references(path: Path) -> list[dict]:
         from ._endnote_xml_to_csl import endnote_xml_to_csl
         return endnote_xml_to_csl(path)
     if suffix == ".ris":
-        raise ReferenceFormatError(
-            f"RIS (.ris) intake not yet implemented: {path}"
-        )
+        from ._ris_to_csl import ris_to_csl
+        return ris_to_csl(path)
     raise ReferenceFormatError(
         f"unsupported reference export format: {suffix or '(no extension)'} "
         f"(supported: .json/Zotero, .bib/Mendeley, .xml/EndNote, .ris/EndNote)"

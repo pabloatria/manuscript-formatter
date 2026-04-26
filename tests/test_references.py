@@ -154,3 +154,30 @@ def test_endnote_malformed_xml_raises_clear_error(tmp_path):
     bad.write_text("<xml><records><record>oops not closed", encoding="utf-8")
     with pytest.raises(ReferenceFormatError, match="malformed EndNote XML"):
         load_references(bad)
+
+
+def test_ris_loads():
+    refs = load_references(FIXT / "sample.ris")
+    assert len(refs) == 2
+    by_id = {r["id"]: r for r in refs}
+    assert "smith2024" in by_id
+    smith = by_id["smith2024"]
+    assert smith["title"] == "Endocrowns in posterior teeth"
+    assert smith["author"][0]["family"] == "Smith"
+    assert smith["author"][1]["family"] == "Doe"
+    assert smith["container-title"] == "Journal of Prosthetic Dentistry"
+    assert smith["issued"]["date-parts"][0][0] == 2024
+    assert smith["DOI"] == "10.1016/j.test.2024.001"
+    assert smith["type"] == "article-journal"
+
+
+def test_ris_falls_back_to_synthetic_id_when_id_missing(tmp_path):
+    """An RIS record with no ID tag should still get a citable id."""
+    bad = tmp_path / "no-id.ris"
+    bad.write_text(
+        "TY  - JOUR\nTI  - Untitled-id paper\nAU  - Anon, A.\nPY  - 2025\nER  -\n",
+        encoding="utf-8",
+    )
+    refs = load_references(bad)
+    assert len(refs) == 1
+    assert refs[0]["id"]   # non-empty, even though source has no ID tag
