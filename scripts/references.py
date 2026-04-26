@@ -92,3 +92,42 @@ def render_bibliography(items: list[dict], csl_path: Path) -> list[str]:
         bib.register(Citation([CitationItem(item["id"])]))
 
     return [str(entry) for entry in bib.bibliography()]
+
+
+def render_inline_citations(
+    citation_groups: list[list[str]],
+    items: list[dict],
+    csl_path: Path,
+) -> list[str]:
+    """Render each in-text citation group using the given CSL style.
+
+    A citation 'group' is what appears at one in-text citation point —
+    e.g., the citation `[1, 3-5]` is one group with three ids. The output
+    is one rendered string per group, in the same order as the input.
+
+    Empty input returns []. Unknown ids are rendered as the style's
+    fallback marker (typically "???") so the caller can audit them.
+    """
+    if not citation_groups:
+        return []
+
+    from citeproc import (CitationStylesStyle, CitationStylesBibliography,
+                          formatter, Citation, CitationItem)
+    from citeproc.source.json import CiteProcJSON
+
+    bib_source = CiteProcJSON(items)
+    style = CitationStylesStyle(str(csl_path), validate=False)
+    bib = CitationStylesBibliography(style, bib_source, formatter.plain)
+
+    # Register all citations first so citeproc-py can compute number
+    # assignments; only after registration is bib.cite() valid.
+    citations = []
+    for group in citation_groups:
+        cit = Citation([CitationItem(cid) for cid in group])
+        bib.register(cit)
+        citations.append(cit)
+
+    # Render each. The third arg to bib.cite is a callback for unresolved
+    # citation warnings; we pass a no-op since we surface "???" markers
+    # in the output strings.
+    return [str(bib.cite(c, lambda *args, **kwargs: None)) for c in citations]
