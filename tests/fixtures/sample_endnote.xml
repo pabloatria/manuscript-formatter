@@ -31,5 +31,20 @@
     </titles>
     <dates><year>2023</year></dates>
   </record>
+  <record>
+    <rec-number>3</rec-number>
+    <ref-type name="Journal Article">17</ref-type>
+    <contributors>
+      <authors>
+        <author><style face="normal" font="default" size="100%">Müller, K.</style></author>
+      </authors>
+    </contributors>
+    <titles>
+      <title><style face="normal" font="default" size="100%">Survival of </style><style face="italic" font="default" size="100%">Streptococcus mutans</style><style face="normal" font="default" size="100%"> on resin composites</style></title>
+      <secondary-title><style face="normal" font="default" size="100%">J Dent Res</style></secondary-title>
+    </titles>
+    <pub-dates><date><style face="normal" font="default" size="100%">2022</style></date></pub-dates>
+    <electronic-resource-num><style face="normal" font="default" size="100%">10.1177/test.2022.x</style></electronic-resource-num>
+  </record>
 </records>
 </xml>
