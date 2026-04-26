@@ -51,6 +51,7 @@ def test_render_report_includes_total_word_count():
 
 def test_render_report_includes_heading_rename_audit():
     md = render_report(SAMPLE_PAYLOAD)
+    assert "## Heading changes" in md
     assert "Background" in md
     assert "Statement of Problem" in md
 
@@ -77,5 +78,13 @@ def test_render_report_handles_no_missing_required():
 def test_render_report_handles_no_heading_renames():
     payload = {**SAMPLE_PAYLOAD, "heading_renames": []}
     md = render_report(payload)
-    # Should not have a stray "Heading X renamed -> Y" line
-    assert "renamed →" not in md and "renamed ->" not in md
+    # Should not emit the "## Heading changes" section when empty
+    assert "## Heading changes" not in md
+
+
+def test_render_report_has_exactly_one_h1():
+    """Markdown convention: one H1 per document. The report's title is
+    the only H1; cover-letter and heading-changes are H2."""
+    md = render_report(SAMPLE_PAYLOAD)
+    h1_lines = [ln for ln in md.splitlines() if ln.startswith("# ") and not ln.startswith("## ")]
+    assert len(h1_lines) == 1, f"expected exactly one H1, got: {h1_lines}"

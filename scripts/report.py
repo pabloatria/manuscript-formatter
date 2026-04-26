@@ -70,14 +70,15 @@ def render_report(payload: dict) -> str:
     # Heading-rename audit trail
     if payload.get("heading_renames"):
         lines.append("")
+        lines.append("## Heading changes")
         for r in payload["heading_renames"]:
-            lines.append(f"ℹ️ Heading \"{r['from']}\" renamed → \"{r['to']}\"")
+            lines.append(f"- ℹ️ \"{r['from']}\" → \"{r['to']}\"")
 
     # Cover letter section (only when generated)
     cover_path = payload.get("cover_letter_path")
     if cover_path:
         lines.append("")
-        lines.append("# Cover letter")
+        lines.append("## Cover letter")
         lines.append(f"- Generated: yes ({cover_path})")
         lines.append("- ⚠️ Fill the [NOVELTY] placeholder before sending")
 
