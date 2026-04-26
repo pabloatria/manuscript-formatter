@@ -30,9 +30,8 @@ def load_references(path: Path) -> list[dict]:
         from ._bibtex_to_csl import bibtex_to_csl
         return bibtex_to_csl(path)
     if suffix == ".xml":
-        raise ReferenceFormatError(
-            f"EndNote XML (.xml) intake not yet implemented: {path}"
-        )
+        from ._endnote_xml_to_csl import endnote_xml_to_csl
+        return endnote_xml_to_csl(path)
     if suffix == ".ris":
         raise ReferenceFormatError(
             f"RIS (.ris) intake not yet implemented: {path}"

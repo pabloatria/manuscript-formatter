@@ -96,3 +96,25 @@ def test_bibtex_book_type_maps_correctly():
     refs = load_references(FIXT / "sample.bib")
     by_id = {r["id"]: r for r in refs}
     assert by_id["kelly2020"]["type"] == "book"
+
+
+def test_endnote_xml_loads():
+    refs = load_references(FIXT / "sample_endnote.xml")
+    assert len(refs) == 2
+    by_year = {r["issued"]["date-parts"][0][0]: r for r in refs}
+    assert 2024 in by_year and 2023 in by_year
+    assert by_year[2024]["author"][0]["family"] == "Smith"
+    assert by_year[2024]["author"][1]["family"] == "Doe"
+    assert by_year[2024]["container-title"] == "Journal of Prosthetic Dentistry"
+    assert by_year[2024]["DOI"] == "10.1016/j.test.2024.001"
+    assert by_year[2024]["type"] == "article-journal"
+
+
+def test_endnote_xml_assigns_id_when_rec_number_present():
+    """EndNote uses <rec-number> as the natural id; the parser should
+    derive an entry id from it so citeproc-py can register the citation."""
+    refs = load_references(FIXT / "sample_endnote.xml")
+    ids = [r["id"] for r in refs]
+    assert all(rid for rid in ids)
+    # Two distinct ids
+    assert len(set(ids)) == len(ids)
