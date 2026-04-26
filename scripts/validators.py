@@ -11,11 +11,34 @@ def _count_words(text: str) -> int:
 
 
 def _section_text_blocks(doc, headings_idx: list[int]) -> list[list[str]]:
-    """Group non-heading paragraphs into runs between consecutive heading
-    indices. Returns one block per heading. The block contains the text of
-    every body paragraph between this heading and the next (or end of doc)."""
+    """Group non-heading paragraphs into runs.
+
+    Returns one block per heading, in document order. If the document has
+    body text BEFORE the first heading, that prose is captured as a leading
+    pseudo-block (returned as the FIRST element). The caller can detect
+    this case by comparing returned-list-length to len(headings_idx).
+    """
     paras = doc.paragraphs
     blocks: list[list[str]] = []
+
+    # Leading pseudo-block: body paragraphs before the first heading
+    if not headings_idx:
+        # No headings at all: everything is the pseudo-block
+        block = [p.text for p in paras
+                 if not (p.style.name or "").startswith("Heading ")]
+        if block:
+            blocks.append(block)
+        return blocks
+
+    if headings_idx[0] > 0:
+        block = []
+        for j in range(0, headings_idx[0]):
+            style = paras[j].style.name or ""
+            if not style.startswith("Heading "):
+                block.append(paras[j].text)
+        if block:
+            blocks.append(block)
+
     bounds = headings_idx + [len(paras)]
     for i in range(len(bounds) - 1):
         start, end = bounds[i] + 1, bounds[i + 1]
@@ -56,6 +79,23 @@ def validate_manuscript(docx_path: Path, journal_cfg: dict) -> dict:
     sections_report: list[dict] = []
     seen_canons: set[str] = set()
 
+    # Handle the leading pseudo-block (prose before the first heading)
+    pseudo_blocks: list[list[str]] = []
+    if len(blocks) > len(mapped):
+        pseudo_blocks = blocks[: len(blocks) - len(mapped)]
+        blocks = blocks[len(blocks) - len(mapped):]
+
+    for pb in pseudo_blocks:
+        wc = sum(_count_words(t) for t in pb)
+        if wc > 0:
+            sections_report.append({
+                "canonical": None,
+                "original_heading": "(before first heading)",
+                "word_count": wc,
+                "limit": None,
+                "over_limit": False,
+            })
+
     for h, block in zip(mapped, blocks):
         wc = sum(_count_words(t) for t in block)
         # Per-section limit
@@ -83,11 +123,26 @@ def validate_manuscript(docx_path: Path, journal_cfg: dict) -> dict:
             seen_canons.add(h.canonical)
 
     # Required-section check
-    required = [s for s in journal_cfg["sections"] if s.get("required")]
-    missing = [s for s in required if s["canonical"] not in seen_canons]
+    # Default to required=True when the YAML omits the key — safer for
+    # hand-authored configs (a forgotten `required: true` line should NOT
+    # silently make the section optional).
+    required = [s for s in journal_cfg["sections"] if s.get("required", True)]
+    missing = [
+        {"canonical": s["canonical"], "display": s.get("display", s["canonical"])}
+        for s in required
+        if s["canonical"] not in seen_canons
+    ]
 
     # Total word count
-    total_wc = sum(r["word_count"] for r in sections_report)
+    # Most journals exclude abstract, references, and acknowledgments from
+    # the main-text total word limit. Hardcoded for v1; Task 16 may move
+    # this into per-journal config (count_in_total: bool) if any journal
+    # disagrees.
+    EXCLUDED_FROM_TOTAL = {"abstract", "references", "acknowledgments"}
+    total_wc = sum(
+        r["word_count"] for r in sections_report
+        if r["canonical"] not in EXCLUDED_FROM_TOTAL
+    )
     total_limit = journal_cfg.get("total_word_limit")
     total_over = (total_limit is not None) and (total_wc > total_limit)
 
