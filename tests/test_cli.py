@@ -6,7 +6,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 FIXT = REPO / "tests" / "fixtures"
 CLI = REPO / "scripts" / "format_manuscript.py"
-PYTHON = "/opt/homebrew/bin/python3.13"
+PYTHON = sys.executable
 
 
 def test_cli_full_run_produces_three_outputs(tmp_path):
@@ -95,3 +95,33 @@ def test_cli_report_includes_renames_and_word_counts(tmp_path):
     assert "Statement of Problem" in content
     # Total word count line
     assert "Total" in content
+
+
+def test_cli_empty_editor_is_rejected(tmp_path):
+    cmd = [
+        PYTHON, str(CLI),
+        str(FIXT / "minimal_manuscript.docx"),
+        "--references", str(FIXT / "sample_zotero.json"),
+        "--journal", "jpd",
+        "--out-dir", str(tmp_path),
+        "--cover-letter", "--editor", "   ",  # whitespace-only
+    ]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    assert r.returncode != 0
+    assert "editor" in (r.stderr + r.stdout).lower()
+
+
+def test_cli_out_dir_pointing_at_file_is_rejected(tmp_path):
+    out_dir_as_file = tmp_path / "iam-a-file.txt"
+    out_dir_as_file.write_text("not a directory", encoding="utf-8")
+    cmd = [
+        PYTHON, str(CLI),
+        str(FIXT / "minimal_manuscript.docx"),
+        "--references", str(FIXT / "sample_zotero.json"),
+        "--journal", "jpd",
+        "--out-dir", str(out_dir_as_file),
+    ]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    assert r.returncode != 0
+    err = (r.stderr + r.stdout).lower()
+    assert "not a directory" in err

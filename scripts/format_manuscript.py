@@ -78,6 +78,10 @@ def main():
     )
     args = ap.parse_args()
 
+    if args.editor is not None and not args.editor.strip():
+        sys.exit("--editor cannot be empty; omit the flag to use the "
+                 "[EDITOR] placeholder")
+
     in_path = Path(args.manuscript).expanduser().resolve()
     if not in_path.exists():
         sys.exit(f"manuscript not found: {in_path}")
@@ -87,6 +91,8 @@ def main():
         sys.exit(f"references file not found: {refs_path}")
 
     out_dir = Path(args.out_dir).expanduser().resolve()
+    if out_dir.exists() and not out_dir.is_dir():
+        sys.exit(f"--out-dir is not a directory: {out_dir}")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Load and validate inputs early so we fail fast.
