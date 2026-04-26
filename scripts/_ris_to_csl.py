@@ -62,18 +62,34 @@ def ris_to_csl(path: Path) -> list[dict]:
     out: list[dict] = []
     cur: dict | None = None
     fallback_idx = 0
+    seen_ids: set[str] = set()
 
     def _finalize(item: dict) -> dict:
         nonlocal fallback_idx
-        if not item.get("id"):
-            item["id"] = f"ris_{fallback_idx}"
-            fallback_idx += 1
+        candidate = item.get("id") or ""
+        if not candidate or candidate in seen_ids:
+            while True:
+                candidate = f"ris_auto_{fallback_idx}"
+                fallback_idx += 1
+                if candidate not in seen_ids:
+                    break
+        seen_ids.add(candidate)
+        item["id"] = candidate
         # Drop empty author list rather than emit "author": []
         if not item.get("author"):
             item.pop("author", None)
+        # Build page range from optional SP/EP fields (set above)
+        sp = item.pop("_sp", None)
+        ep = item.pop("_ep", None)
+        if sp and ep:
+            item["page"] = f"{sp}-{ep}"
+        elif sp:
+            item["page"] = sp
+        elif ep:
+            item["page"] = ep
         return item
 
-    with open(path, encoding="utf-8") as f:
+    with open(path, encoding="utf-8-sig") as f:
         for raw in f:
             line = raw.rstrip("\n").rstrip("\r")
             m = _TAG_RE.match(line)
@@ -114,13 +130,9 @@ def ris_to_csl(path: Path) -> list[dict]:
             elif tag == "IS":
                 cur["issue"] = val
             elif tag == "SP":
-                cur["page"] = val + (cur.get("page", "") and "")  # set start page
+                cur["_sp"] = val
             elif tag == "EP":
-                # Append end page if start was already captured
-                if "page" in cur:
-                    cur["page"] = f"{cur['page']}-{val}"
-                else:
-                    cur["page"] = val
+                cur["_ep"] = val
             elif tag == "ER":
                 out.append(_finalize(cur))
                 cur = None

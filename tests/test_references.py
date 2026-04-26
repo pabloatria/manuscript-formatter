@@ -181,3 +181,44 @@ def test_ris_falls_back_to_synthetic_id_when_id_missing(tmp_path):
     refs = load_references(bad)
     assert len(refs) == 1
     assert refs[0]["id"]   # non-empty, even though source has no ID tag
+
+
+def test_ris_handles_utf8_bom(tmp_path):
+    """An EndNote-on-Windows export with a UTF-8 BOM at file start must
+    not lose its first record."""
+    bom = "\ufeff" + (
+        "TY  - JOUR\nID  - bom2024\nTI  - BOM-prefixed\n"
+        "AU  - Test, A.\nPY  - 2024\nER  -\n"
+    )
+    p = tmp_path / "with-bom.ris"
+    p.write_text(bom, encoding="utf-8")
+    refs = load_references(p)
+    assert len(refs) == 1
+    assert refs[0]["id"] == "bom2024"
+
+
+def test_ris_id_collision_with_anonymous_record(tmp_path):
+    """A real record with ID 'ris_0' followed by an anonymous record (no
+    ID tag) must not collapse into the same citation."""
+    p = tmp_path / "collide.ris"
+    p.write_text(
+        "TY  - JOUR\nID  - ris_0\nTI  - Real one\nAU  - One, A.\nPY  - 2024\nER  -\n"
+        "TY  - JOUR\nTI  - Anonymous\nAU  - Two, B.\nPY  - 2025\nER  -\n",
+        encoding="utf-8",
+    )
+    refs = load_references(p)
+    assert len(refs) == 2
+    ids = [r["id"] for r in refs]
+    assert len(set(ids)) == 2  # no collision
+    assert "ris_0" in ids
+
+
+def test_ris_page_range_from_sp_ep(tmp_path):
+    """SP + EP fields should produce a 'page' field of 'start-end'."""
+    p = tmp_path / "pages.ris"
+    p.write_text(
+        "TY  - JOUR\nID  - test\nTI  - Pages\nSP  - 100\nEP  - 110\nER  -\n",
+        encoding="utf-8",
+    )
+    refs = load_references(p)
+    assert refs[0]["page"] == "100-110"
