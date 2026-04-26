@@ -48,3 +48,22 @@ def test_csl_entry_must_have_id(tmp_path):
     bad.write_text('[{"id": "ok"}, {"title": "no id here"}]', encoding="utf-8")
     with pytest.raises(ReferenceFormatError, match="entry 1 missing required 'id'"):
         load_references(bad)
+
+
+def test_bibtex_loads_via_extension():
+    refs = load_references(FIXT / "sample.bib")
+    assert len(refs) == 2
+    by_id = {r["id"]: r for r in refs}
+    assert "smith2024" in by_id
+    assert by_id["smith2024"]["title"] == "Endocrowns in posterior teeth"
+    # date-parts is the CSL canonical year representation
+    assert by_id["smith2024"]["issued"]["date-parts"][0][0] == 2024
+    # Authors split correctly
+    assert by_id["smith2024"]["author"][0]["family"] == "Smith"
+    assert by_id["smith2024"]["author"][1]["family"] == "Doe"
+    # Journal mapped to container-title
+    assert by_id["smith2024"]["container-title"] == "Journal of Prosthetic Dentistry"
+    # DOI passed through
+    assert by_id["smith2024"]["DOI"] == "10.1016/j.test.2024.001"
+    # Type is article-journal
+    assert by_id["smith2024"]["type"] == "article-journal"

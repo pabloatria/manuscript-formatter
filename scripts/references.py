@@ -27,9 +27,8 @@ def load_references(path: Path) -> list[dict]:
     if suffix == ".json":
         return _load_csl_json(path)
     if suffix == ".bib":
-        raise ReferenceFormatError(
-            f"BibTeX (.bib) intake not yet implemented: {path}"
-        )
+        from ._bibtex_to_csl import bibtex_to_csl
+        return bibtex_to_csl(path)
     if suffix == ".xml":
         raise ReferenceFormatError(
             f"EndNote XML (.xml) intake not yet implemented: {path}"
