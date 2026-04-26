@@ -41,9 +41,11 @@ def _summarize_methods(input_docx: Path) -> str:
         style = paras[j].style.name or ""
         if style.startswith("Heading "):
             break
-        text = paras[j].text.strip()
+        text = " ".join(paras[j].text.split())  # collapse all whitespace
         if text:
-            # First sentence (split on '. ').
+            # Naive sentence split on '. ' — abbreviations like "Dr." inside
+            # a sentence may produce truncated output. The cover letter is a
+            # draft the user reviews before sending, so this is acceptable.
             first = text.split(". ")[0].rstrip(".")
             return first + "."
     return "[METHODS_SUMMARY: one-sentence description of the study design]"

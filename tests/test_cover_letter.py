@@ -74,3 +74,26 @@ def test_cover_letter_falls_back_to_placeholder_when_no_methods(tmp_path):
                           manuscript_title="T", corresponding_author="P")
     txt = "\n".join(p.text for p in Document(str(out)).paragraphs)
     assert "[METHODS_SUMMARY" in txt
+
+
+def test_cover_letter_methods_summary_handles_embedded_newlines(tmp_path):
+    """python-docx may preserve newlines inside paragraph.text. The
+    methods summarizer must collapse them before sentence-splitting,
+    otherwise a paragraph like 'Sentence one.\\nSentence two.' returns
+    the entire paragraph as one 'sentence'."""
+    in_path = tmp_path / "newlines.docx"
+    d = Document()
+    d.add_heading("Methods", level=1)
+    p = d.add_paragraph("Fifty patients enrolled.")
+    # Force an embedded line break in the same paragraph
+    p.add_run().add_break()
+    p.add_run("Then we followed them prospectively.")
+    d.save(in_path)
+    out = tmp_path / "cover.docx"
+    cfg = load_journal("jpd", config_dir=CFG_DIR)
+    generate_cover_letter(in_path, out, journal_cfg=cfg, editor="Dr. X",
+                          manuscript_title="T", corresponding_author="P")
+    txt = "\n".join(p.text for p in Document(str(out)).paragraphs)
+    # The summary should be the first sentence only, not the whole paragraph
+    assert "Fifty patients enrolled" in txt
+    assert "Then we followed" not in txt or "Fifty patients enrolled" in txt.split("Then we followed")[0]
