@@ -20,3 +20,33 @@ def test_canonical_section_names_are_unique():
     cfg = load_journal("jpd", config_dir=CONFIG_DIR)
     names = [s["canonical"] for s in cfg["sections"]]
     assert len(names) == len(set(names)), f"duplicate canonical: {names}"
+
+def test_malformed_yaml_raises(tmp_path):
+    bad = tmp_path / "broken.yaml"
+    bad.write_text("name: 'unclosed string\nabbrev: x\n", encoding="utf-8")
+    with pytest.raises(JournalConfigError, match="invalid YAML"):
+        load_journal("broken", config_dir=tmp_path)
+
+def test_top_level_non_dict_raises(tmp_path):
+    bad = tmp_path / "list.yaml"
+    bad.write_text("- one\n- two\n", encoding="utf-8")
+    with pytest.raises(JournalConfigError, match="must be a mapping"):
+        load_journal("list", config_dir=tmp_path)
+
+def test_section_missing_canonical_raises(tmp_path):
+    """A section dict without a 'canonical' key must be rejected before the
+    duplicate-uniqueness check silently lets two None entries collapse."""
+    bad = tmp_path / "missing_canon.yaml"
+    bad.write_text(
+        "name: X\nabbreviation: X\n"
+        "sections:\n  - display: Foo\n    aliases: [Foo]\n"
+        "abstract: {format: unstructured, word_limit: 250}\n"
+        "reference_style: x.csl\n"
+        "title_page: {separate_file: false, required_blocks: []}\n"
+        "figures: {embedded: false, legend_format: '', numbering: ''}\n"
+        "guidelines: {font: '', font_size: 12, line_spacing: 2.0, margins_cm: 2.5, page_numbers: true}\n"
+        "cover_letter_template: ''\n",
+        encoding="utf-8"
+    )
+    with pytest.raises(JournalConfigError, match="missing 'canonical'"):
+        load_journal("missing_canon", config_dir=tmp_path)
