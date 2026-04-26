@@ -106,3 +106,41 @@ def map_headings_to_canonical(
             original_text=h.text,
         ))
     return out
+
+
+def reformat_sections(
+    input_path: Path,
+    output_path: Path,
+    journal_cfg: dict,
+) -> None:
+    """Open the input doc, rename headings to journal canonical names, write
+    to output_path.
+
+    GUARANTEE: body paragraphs (anything not styled `Heading 1..9`) are
+    NEVER mutated. Only heading text changes, and only when it maps to a
+    canonical section in journal_cfg. Unmapped headings are left exactly
+    as written.
+    """
+    doc = Document(input_path)
+    headings = read_headings(input_path)
+    mapped = map_headings_to_canonical(headings, journal_cfg["sections"])
+    canon_to_display = {s["canonical"]: s["display"] for s in journal_cfg["sections"]}
+
+    for m in mapped:
+        if m.canonical is None:
+            continue  # leave unmapped headings exactly as written
+        target_text = canon_to_display.get(m.canonical)
+        if not target_text:
+            continue  # config has canonical but no display — leave alone
+        para = doc.paragraphs[m.paragraph_index]
+        # Replace text in-place without disturbing the paragraph's style.
+        # Clear all runs, then write the new text into the first run (or
+        # add one if there are none). This preserves the Heading N style
+        # binding, page-break flags, and any other paragraph-level props.
+        for run in list(para.runs):
+            run.text = ""
+        if para.runs:
+            para.runs[0].text = target_text
+        else:
+            para.add_run(target_text)
+    doc.save(output_path)
