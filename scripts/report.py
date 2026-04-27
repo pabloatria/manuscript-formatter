@@ -7,6 +7,18 @@ made (ℹ️).
 """
 
 
+def _md_safe(s) -> str:
+    """Wrap user-controlled strings in inline-code spans to neutralize
+    Markdown formatting (links, images, emphasis). Replaces any embedded
+    backticks with a Unicode-look-alike to keep the span unbroken."""
+    text = str(s) if s is not None else ""
+    # If the string itself contains backticks, escape them so the span
+    # doesn't terminate early.
+    if "`" in text:
+        text = text.replace("`", "ʼ")  # modifier-letter apostrophe — visually similar
+    return f"`{text}`"
+
+
 def render_report(payload: dict) -> str:
     """Produce a Markdown report from a validation payload.
 
@@ -32,7 +44,7 @@ def render_report(payload: dict) -> str:
     lines: list[str] = []
     lines.append(
         f"# {journal['abbreviation']} Submission Report — "
-        f"{payload['manuscript_filename']}"
+        f"{_md_safe(payload['manuscript_filename'])}"
     )
     lines.append("")
 
@@ -46,7 +58,7 @@ def render_report(payload: dict) -> str:
 
     # Per-section breakdown
     for s in validation["sections"]:
-        label = s["canonical"] or s["original_heading"] or "(unnamed)"
+        label = s["canonical"] or _md_safe(s["original_heading"]) or "(unnamed)"
         wc = s["word_count"]
         limit = s["limit"]
         if limit is None:
@@ -72,7 +84,7 @@ def render_report(payload: dict) -> str:
         lines.append("")
         lines.append("## Heading changes")
         for r in payload["heading_renames"]:
-            lines.append(f"- ℹ️ \"{r['from']}\" → \"{r['to']}\"")
+            lines.append(f"- ℹ️ {_md_safe(r['from'])} → {_md_safe(r['to'])}")
 
     # Cover letter section (only when generated)
     cover_path = payload.get("cover_letter_path")

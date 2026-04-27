@@ -26,7 +26,7 @@ def load_journal(slug: str, config_dir: Path,
     flattened to the top level. Downstream modules consume the same
     shape v1 used.
     """
-    if "/" in slug or "\\" in slug or slug.startswith(".") or not slug:
+    if not slug or "/" in slug or "\\" in slug or "\x00" in slug or slug.startswith("."):
         raise JournalConfigError(f"invalid journal slug: {slug!r}")
     if article_type not in SUPPORTED_ARTICLE_TYPES:
         raise JournalConfigError(

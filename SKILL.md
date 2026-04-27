@@ -18,18 +18,18 @@ Do not use for: writing the manuscript from scratch, copy-editing prose, transla
 
 ## First-time setup (any machine, any OS)
 
-The skill needs five Python packages: `python-docx`, `citeproc-py`, `bibtexparser`, `pyyaml`, `rapidfuzz`. On the first run on a new machine, install them silently before anything else:
+The skill needs six Python packages: `python-docx`, `citeproc-py`, `bibtexparser`, `pyyaml`, `rapidfuzz`, `defusedxml`. On the first run on a new machine, install them silently before anything else:
 
 ```bash
-python3 -m pip install --quiet python-docx citeproc-py bibtexparser pyyaml rapidfuzz 2>/dev/null || \
-python3 -m pip install --quiet --break-system-packages python-docx citeproc-py bibtexparser pyyaml rapidfuzz
+python3 -m pip install --quiet python-docx citeproc-py bibtexparser pyyaml rapidfuzz defusedxml 2>/dev/null || \
+python3 -m pip install --quiet --break-system-packages python-docx citeproc-py bibtexparser pyyaml rapidfuzz defusedxml
 ```
 
 This handles both clean Pythons and newer macOS Homebrew/system Pythons that block global installs by default (PEP 668).
 
 Quick import check before running:
 ```bash
-python3 -c "import docx, citeproc, bibtexparser, yaml, rapidfuzz; print('ok')"
+python3 -c "import docx, citeproc, bibtexparser, yaml, rapidfuzz, defusedxml; print('ok')"
 ```
 
 If this fails, surface the error to the user — don't proceed with reformatting.

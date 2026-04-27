@@ -12,7 +12,7 @@ from rapidfuzz import fuzz
 # names like "Encabezado 1", and any non-Latin variants. We deliberately
 # do NOT silently downgrade or guess at level — unrecognized headings
 # return None and the caller sees them as body paragraphs.
-_HEADING_RE = re.compile(r"^Heading ([1-9])$")
+_HEADING_RE = re.compile(r"\AHeading ([1-9])\Z")
 
 
 @dataclass(frozen=True)

@@ -39,23 +39,24 @@ The skill processes user-supplied `.docx` manuscripts and reference-manager expo
 | Empty or whitespace-only `--editor` | Guarded — falls back to the `[EDITOR]` placeholder rather than emitting `Dear ,` |
 | Unknown journal slug | Hard-fails with a list of valid slugs; no silent fallback |
 | Citation-key injection in prose attempting to traverse references | Citation matching is by author + year + title fuzzy match (rapidfuzz), not by raw key lookup; no path or attribute access is derived from manuscript text |
-| XML external-entity attacks via EndNote `.xml` | Parsed with `xml.etree.ElementTree`'s default secure mode (no DTD, no external entities) |
+| XML external-entity attacks via EndNote `.xml` | Parsed with `defusedxml.ElementTree` to prevent entity-expansion DoS attacks (billion laughs); external entities and DTD network retrieval are also blocked. |
 
 ## Dependencies
 
-The skill depends on five well-maintained Python packages:
+The skill depends on six well-maintained Python packages:
 
 - **python-docx** — Word `.docx` reader/writer. Mature, MIT-licensed, used in many production systems.
 - **citeproc-py** — CSL renderer, used to convert reference data into a journal's bibliography style. BSD-licensed.
 - **bibtexparser** — BibTeX (`.bib`) parser for Mendeley exports. MIT-licensed.
 - **pyyaml** — YAML parser, used only on bundled journal configs (never on user input). Loaded with `yaml.safe_load` to disable arbitrary code execution. MIT-licensed.
 - **rapidfuzz** — Fast fuzzy-string matching for citation reconciliation. MIT-licensed.
+- **defusedxml** — Hardened XML parser used for EndNote `.xml` exports; rejects entity-expansion bombs and external-entity references. PSF-licensed.
 
-All five are MIT or BSD licensed and have no known CVEs as of this skill's last release (verified with `pip-audit`). You can re-verify at any time:
+All six are MIT, BSD, or PSF licensed and have no known CVEs as of this skill's last release (verified with `pip-audit`). You can re-verify at any time:
 
 ```bash
 pip install pip-audit
-pip-audit -r <(echo -e "python-docx\nciteproc-py\nbibtexparser\npyyaml\nrapidfuzz")
+pip-audit -r <(echo -e "python-docx\nciteproc-py\nbibtexparser\npyyaml\nrapidfuzz\ndefusedxml")
 ```
 
 These are installed via `pip install` in `install.sh`.

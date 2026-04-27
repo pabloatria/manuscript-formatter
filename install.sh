@@ -31,27 +31,27 @@ fi
 # On the fallback failure branch we intentionally do NOT suppress stderr so the
 # user sees the real reason (network, permissions, PEP 668 without the flag, etc.).
 echo ""
-echo "▸ Installing python-docx, citeproc-py, bibtexparser, pyyaml, rapidfuzz..."
-if python3 -m pip install --quiet --upgrade python-docx citeproc-py bibtexparser pyyaml rapidfuzz 2>/dev/null; then
+echo "▸ Installing python-docx, citeproc-py, bibtexparser, pyyaml, rapidfuzz, defusedxml..."
+if python3 -m pip install --quiet --upgrade python-docx citeproc-py bibtexparser pyyaml rapidfuzz defusedxml 2>/dev/null; then
     echo "✓ installed cleanly"
-elif python3 -m pip install --quiet --upgrade --break-system-packages python-docx citeproc-py bibtexparser pyyaml rapidfuzz; then
+elif python3 -m pip install --quiet --upgrade --break-system-packages python-docx citeproc-py bibtexparser pyyaml rapidfuzz defusedxml; then
     echo "✓ installed (used --break-system-packages for system Python)"
 else
     echo "✗ install failed. Retrying with full output so you can see the error:"
-    python3 -m pip install --upgrade --break-system-packages python-docx citeproc-py bibtexparser pyyaml rapidfuzz || true
+    python3 -m pip install --upgrade --break-system-packages python-docx citeproc-py bibtexparser pyyaml rapidfuzz defusedxml || true
     echo ""
     echo "  If the error above is about PEP 668 or an externally-managed environment,"
     echo "  install into a venv instead:"
     echo "    python3 -m venv ~/.manuscript-formatter-venv"
     echo "    source ~/.manuscript-formatter-venv/bin/activate"
-    echo "    pip install python-docx citeproc-py bibtexparser pyyaml rapidfuzz"
+    echo "    pip install python-docx citeproc-py bibtexparser pyyaml rapidfuzz defusedxml"
     exit 1
 fi
 
 # Verify imports
 echo ""
 echo "▸ Verifying imports..."
-python3 -c "import docx, citeproc, bibtexparser, yaml, rapidfuzz; print('✓ all imports work')"
+python3 -c "import docx, citeproc, bibtexparser, yaml, rapidfuzz, defusedxml; print('✓ all imports work')"
 
 # Print next steps
 SKILL_DIR=$(cd "$(dirname "$0")" && pwd)

@@ -14,6 +14,8 @@ workflow don't pay the parse cost.
 """
 import re
 from pathlib import Path
+import defusedxml.ElementTree as DET
+from defusedxml.common import EntitiesForbidden
 from xml.etree import ElementTree as ET
 
 
@@ -76,8 +78,8 @@ def endnote_xml_to_csl(path: Path) -> list[dict]:
     silently and surface in the validator's count of total entries.
     """
     try:
-        tree = ET.parse(str(path))
-    except ET.ParseError as e:
+        tree = DET.parse(str(path))
+    except (ET.ParseError, EntitiesForbidden) as e:
         from .references import ReferenceFormatError
         raise ReferenceFormatError(
             f"{path}: malformed EndNote XML: {e}"

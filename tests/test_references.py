@@ -156,6 +156,30 @@ def test_endnote_malformed_xml_raises_clear_error(tmp_path):
         load_references(bad)
 
 
+def test_endnote_xml_billion_laughs_raises_clearly(tmp_path):
+    """A billion-laughs XML must be rejected promptly via defusedxml's
+    EntitiesForbidden (wrapped in ReferenceFormatError), not hang the
+    parser."""
+    bomb = tmp_path / "bomb.xml"
+    bomb.write_text(
+        '<?xml version="1.0"?>\n'
+        '<!DOCTYPE r [\n'
+        '  <!ENTITY a "lol">\n'
+        '  <!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">\n'
+        '  <!ENTITY c "&b;&b;&b;&b;&b;&b;&b;&b;&b;&b;">\n'
+        ']>\n'
+        '<xml><records><record><titles><title>&c;</title></titles></record></records></xml>',
+        encoding="utf-8",
+    )
+    # Must complete quickly (no hang) AND raise a clean ReferenceFormatError.
+    import time
+    t0 = time.monotonic()
+    with pytest.raises(ReferenceFormatError):
+        load_references(bomb)
+    elapsed = time.monotonic() - t0
+    assert elapsed < 1.0, f"parser took {elapsed:.2f}s — possibly hanging on entity expansion"
+
+
 def test_ris_loads():
     refs = load_references(FIXT / "sample.ris")
     assert len(refs) == 2
