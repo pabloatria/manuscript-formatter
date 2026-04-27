@@ -81,3 +81,150 @@ article_types:
 
       Sincerely,
       {corresponding_author}
+
+  case-report:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 150
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: clinical_report
+        display: Clinical Report
+        aliases: [Clinical Report, Case Report, Case Description, Patient History, Case Presentation]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion]
+        word_limit: null
+        required: false  # JPD lists Discussion as optional for clinical reports
+      - canonical: summary
+        display: Summary
+        aliases: [Summary, Conclusion, Conclusions]
+        word_limit: null
+        required: true
+    abstract:
+      format: unstructured
+      subsections: []
+      word_limit: 150
+    total_word_limit: 1250  # 4-5 double-spaced pages
+    cover_letter_template: |
+      Dear {editor},
+
+      We submit for your consideration a clinical report titled "{title}",
+      which describes {methods_summary}. [NOVELTY: 1-2 sentences explaining
+      what this case adds to the literature].
+
+      {authors_summary}. The manuscript has not been published or submitted
+      elsewhere; all authors have approved the submission.
+
+      Sincerely,
+      {corresponding_author}
+
+  technique:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 150
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: technique
+        display: Technique
+        aliases: [Technique, Procedure, Method, Step-by-Step]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion, Clinical Considerations]
+        word_limit: null
+        required: false  # optional per JPD's guide
+      - canonical: summary
+        display: Summary
+        aliases: [Summary, Conclusion, Conclusions]
+        word_limit: null
+        required: true
+    abstract:
+      format: unstructured
+      subsections: []
+      word_limit: 150
+    total_word_limit: 1250  # 4-5 double-spaced pages
+    cover_letter_template: |
+      Dear {editor},
+
+      We submit for your consideration a dental technique titled "{title}",
+      which describes {methods_summary}. [NOVELTY: 1-2 sentences explaining
+      the clinical advantage of this technique].
+
+      {authors_summary}. The manuscript has not been published or submitted
+      elsewhere; all authors have approved the submission.
+
+      Sincerely,
+      {corresponding_author}
+
+  systematic-review:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 400
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: methods
+        display: Methods   # JPD systematic reviews use "Methods" not "Material and Methods"
+        aliases: [Methods, Material and Methods, Materials and Methods, Search Strategy]
+        word_limit: null
+        required: true
+      - canonical: results
+        display: Results
+        aliases: [Results, Findings]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion]
+        word_limit: null
+        required: true
+      - canonical: conclusions
+        display: Conclusions
+        aliases: [Conclusion, Conclusions]
+        word_limit: null
+        required: true
+    abstract:
+      format: structured
+      subsections:
+        - Statement of Problem
+        - Purpose
+        - Material and Methods
+        - Results
+        - Conclusions
+      word_limit: 400
+    total_word_limit: null  # JPD does not cap systematic-review length
+    cover_letter_template: |
+      Dear {editor},
+
+      We submit for your consideration a systematic review titled "{title}",
+      which {methods_summary}. Our findings — {results_summary} — represent
+      [NOVELTY: 1-2 sentences explaining the gap this review fills].
+
+      The protocol was registered with PROSPERO before data extraction
+      began [INSERT PROSPERO ID]. {authors_summary}. The manuscript has
+      not been published or submitted elsewhere; all authors have approved
+      the submission.
+
+      Sincerely,
+      {corresponding_author}

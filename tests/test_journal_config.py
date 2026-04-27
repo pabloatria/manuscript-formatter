@@ -162,3 +162,11 @@ article_types:
     p.write_text(yaml_text, encoding="utf-8")
     with pytest.raises(JournalConfigError, match="per-type keys.*at journal level"):
         load_journal("stray", config_dir=tmp_path, article_type="research")
+
+
+@pytest.mark.parametrize("article_type",
+                         ["research", "case-report", "technique", "systematic-review"])
+def test_jpd_loads_all_four_article_types(article_type):
+    cfg = load_journal("jpd", config_dir=CONFIG_DIR, article_type=article_type)
+    assert cfg["sections"]
+    assert cfg["abstract"]["word_limit"] is not None or article_type == "tip"
