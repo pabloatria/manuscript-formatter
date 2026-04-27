@@ -108,3 +108,29 @@ def test_orphan_empty_runs_are_dropped_after_rename(tmp_path):
                    if (p.style.name or "").startswith("Heading "))
     assert len(renamed.runs) == 1
     assert renamed.runs[0].text == "Introduction"
+
+
+CLINICAL_REPORT_FIXTURE = (Path(__file__).resolve().parent
+                            / "fixtures" / "clinical_report_manuscript.docx")
+
+
+def test_reformat_clinical_report_preserves_clinical_report_heading(tmp_path):
+    """For --article-type case-report, the 'Clinical Report' heading must
+    survive intact (canonical name === display name) instead of being
+    fuzzy-mapped to a research-IMRAD section like Methods or Results."""
+    out_path = tmp_path / "out.docx"
+    cfg = load_journal("jpd", config_dir=CFG_DIR, article_type="case-report")
+    reformat_sections(CLINICAL_REPORT_FIXTURE, out_path, cfg)
+    new_headings = [h.text for h in read_headings(out_path)]
+    assert "Clinical Report" in new_headings
+    # IMRAD sections must NOT appear (they don't apply to case reports)
+    assert "Material and Methods" not in new_headings
+    assert "Results" not in new_headings
+    # Body prose unchanged (the bedrock invariant)
+    in_doc = Document(str(CLINICAL_REPORT_FIXTURE))
+    out_doc = Document(str(out_path))
+    in_body = [p.text for p in in_doc.paragraphs
+               if not (p.style.name or "").startswith("Heading ")]
+    out_body = [p.text for p in out_doc.paragraphs
+                if not (p.style.name or "").startswith("Heading ")]
+    assert in_body == out_body

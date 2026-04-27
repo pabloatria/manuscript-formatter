@@ -71,7 +71,55 @@ def make_jpd_style_manuscript(out_path: Path):
     _normalize_docx(out_path)
 
 
+def make_jpd_clinical_report(out_path: Path):
+    """A short clinical report following JPD's required structure:
+    Abstract → Introduction → Clinical Report → Discussion → Summary."""
+    doc = Document()
+    doc.add_heading("Abstract", level=1)
+    doc.add_paragraph(
+        "A 62-year-old patient with a failing implant-supported prosthesis "
+        "was treated with a digital workflow combining intraoral scanning, "
+        "guided implant placement, and a milled zirconia crown. Six-month "
+        "follow-up showed stable peri-implant health and patient satisfaction."
+    )
+    doc.add_heading("Introduction", level=1)
+    doc.add_paragraph(
+        "Failures of implant-supported prostheses in the maxillary anterior "
+        "are challenging because of esthetic demands and bone quality."
+    )
+    doc.add_heading("Clinical Report", level=1)
+    doc.add_paragraph(
+        "Patient history: A 62-year-old female presented with an exposed "
+        "abutment screw on tooth 11. Examination revealed peri-implantitis "
+        "with 4 mm probing depth and bleeding on probing."
+    )
+    doc.add_paragraph(
+        "Treatment: After non-surgical debridement and a 6-week healing "
+        "period, the implant was explanted using a guided technique."
+    )
+    doc.add_paragraph(
+        "Outcome: At 6-month follow-up, the new implant showed full "
+        "osseointegration with stable peri-implant health."
+    )
+    doc.add_heading("Discussion", level=1)
+    doc.add_paragraph(
+        "Digital workflows for implant explantation and replacement reduce "
+        "surgical time and improve esthetic predictability."
+    )
+    doc.add_heading("Summary", level=1)
+    doc.add_paragraph(
+        "This clinical report demonstrates a digital workflow for the "
+        "predictable replacement of a failing maxillary anterior implant."
+    )
+    doc.save(out_path)
+    _normalize_docx(out_path)
+
+
 if __name__ == "__main__":
     out = Path(__file__).resolve().parent / "minimal_manuscript.docx"
     make_jpd_style_manuscript(out)
+    print(f"wrote {out}")
+
+    out = Path(__file__).resolve().parent / "clinical_report_manuscript.docx"
+    make_jpd_clinical_report(out)
     print(f"wrote {out}")
