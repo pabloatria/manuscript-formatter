@@ -26,9 +26,9 @@ def test_reformat_renames_headings_to_jpd_canonical(tmp_path):
     cfg = load_journal("jpd", config_dir=CFG_DIR)
     reformat_sections(FIXTURE, out_path, cfg)
     new_headings = [h.text for h in read_headings(out_path)]
-    # JPD canonicals: Abstract, Statement of Problem, Material and Methods,
+    # JPD canonicals: Abstract, Introduction, Material and Methods,
     # Results, Discussion, Conclusions
-    assert "Statement of Problem" in new_headings  # was "Background"
+    assert "Introduction" in new_headings          # was "Background"
     assert "Material and Methods" in new_headings  # was "Methods"
     assert "Conclusions" in new_headings           # was "Conclusion"
     # Headings that didn't need renaming should still be present
@@ -107,4 +107,4 @@ def test_orphan_empty_runs_are_dropped_after_rename(tmp_path):
     renamed = next(p for p in out_doc.paragraphs
                    if (p.style.name or "").startswith("Heading "))
     assert len(renamed.runs) == 1
-    assert renamed.runs[0].text == "Statement of Problem"
+    assert renamed.runs[0].text == "Introduction"

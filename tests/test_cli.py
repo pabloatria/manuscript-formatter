@@ -90,9 +90,9 @@ def test_cli_report_includes_renames_and_word_counts(tmp_path):
     content = md.read_text(encoding="utf-8")
     # Title from journal abbreviation
     assert "J Prosthet Dent" in content
-    # Heading rename audit (Background -> Statement of Problem)
+    # Heading rename audit (Background -> Introduction)
     assert "Background" in content
-    assert "Statement of Problem" in content
+    assert "Introduction" in content
     # Total word count line
     assert "Total" in content
 
