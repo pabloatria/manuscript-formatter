@@ -2,7 +2,7 @@
 
 > Reformat finished .docx manuscripts for any of 11 dental journals — without touching your prose.
 
-[![Try in ChatGPT](https://img.shields.io/badge/Try%20in-ChatGPT-10A37F?logo=openai&logoColor=white)](https://chatgpt.com/g/g-XXXXX-manuscript-formatter)
+[![Try in ChatGPT](https://img.shields.io/badge/Try%20in-ChatGPT-10A37F?logo=openai&logoColor=white)](https://chatgpt.com/g/g-69ef6e90a788819193a06a73f09b5f21-manuscript-formatter-by-dr-pablo-atria)
 [![Claude Skill](https://img.shields.io/badge/Claude-Skill-D97757)](https://docs.claude.com/en/docs/agents-and-tools/agent-skills)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776AB.svg)](https://www.python.org/downloads/)
@@ -59,7 +59,7 @@ The installer handles `python-docx`, `citeproc-py`, `bibtexparser`, `pyyaml`, an
 ### ChatGPT (zero-install for end users)
 
 Use the published Custom GPT directly:
-**[chatgpt.com/g/g-XXXXX-manuscript-formatter](https://chatgpt.com/g/g-XXXXX-manuscript-formatter)** *(URL filled in once the GPT is published to the store)*
+**[chatgpt.com/g/g-69ef6e90a788819193a06a73f09b5f21-manuscript-formatter-by-dr-pablo-atria](https://chatgpt.com/g/g-69ef6e90a788819193a06a73f09b5f21-manuscript-formatter-by-dr-pablo-atria)**
 
 Requires ChatGPT Plus. Attach your `.docx` manuscript and reference-manager export to the chat, name a journal — get the reformatted `.docx`, validation report, and optional cover letter back as downloads.
 

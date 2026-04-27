@@ -15,7 +15,7 @@ ChatGPT Custom GPT) in sync. A user installing either version does
    "Try in ChatGPT" badge / 👉 callout / Install → ChatGPT section.
 4. Commit as `docs: link to published Manuscript Formatter Custom GPT URL`.
 
-**Current live URL:** _(pending publication)_
+**Current live URL:** <https://chatgpt.com/g/g-69ef6e90a788819193a06a73f09b5f21-manuscript-formatter-by-dr-pablo-atria>
 
 ## After a change to anything under `scripts/`
 
