@@ -1,75 +1,229 @@
 name: Clinical Oral Implants Research
 abbreviation: Clin Oral Implants Res
-sections:
-  - canonical: abstract
-    display: Abstract
-    aliases: [Abstract, Summary]
-    word_limit: 250
-    required: true
-  - canonical: introduction
-    display: Introduction
-    aliases: [Introduction, Background]
-    word_limit: null
-    required: true
-  - canonical: purpose
-    display: Objectives
-    aliases: [Purpose, Aim, Objective, Objectives]
-    word_limit: null
-    required: true
-  - canonical: methods
-    display: Material and Methods
-    aliases: [Methods, Materials and Methods, Material and Methods]
-    word_limit: null
-    required: true
-  - canonical: results
-    display: Results
-    aliases: [Results, Findings]
-    word_limit: null
-    required: true
-  - canonical: discussion
-    display: Discussion
-    aliases: [Discussion]
-    word_limit: null
-    required: true
-  - canonical: conclusions
-    display: Conclusions
-    aliases: [Conclusion, Conclusions]
-    word_limit: null
-    required: true
-abstract:
-  format: structured
-  subsections:
-    - Objectives
-    - Material and Methods
-    - Results
-    - Conclusions
-  word_limit: 250
-total_word_limit: 4000
 reference_style: clinical-oral-implants-research.csl
+
 title_page:
   separate_file: true
   required_blocks: [authors, affiliations, corresponding_author, conflicts, funding, irb]
+
 figures:
   embedded: false
   legend_format: "Figure {n}. {caption}"
   numbering: "Figure {n}"
+
 guidelines:
   font: "Times New Roman"
   font_size: 12
   line_spacing: 2.0
   margins_cm: 2.54
   page_numbers: true
-cover_letter_template: |
-  Dear {editor},
 
-  We submit for your consideration our manuscript titled "{title}", which
-  reports {methods_summary}. Our findings — {results_summary} — represent
-  [NOVELTY: 1-2 sentences explaining what's new and why Clinical Oral
-  Implants Research is the right home].
+article_types:
 
-  {authors_summary}. The manuscript has not been published or submitted
-  elsewhere; all authors have approved the submission. Conflicts of interest
-  and funding sources are disclosed on the title page.
+  research:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 250  # TODO verify
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: methods
+        display: Material and Methods
+        aliases: [Methods, Materials and Methods, Material and Methods]
+        word_limit: null
+        required: true
+      - canonical: results
+        display: Results
+        aliases: [Results, Findings]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion]
+        word_limit: null
+        required: true
+      - canonical: conclusions
+        display: Conclusions
+        aliases: [Conclusion, Conclusions]
+        word_limit: null
+        required: true
+    abstract:
+      format: structured
+      subsections:
+        - Objectives
+        - Material and Methods
+        - Results
+        - Conclusions
+      word_limit: 250  # TODO verify
+    total_word_limit: 4000  # TODO verify
+    cover_letter_template: |
+      Dear {editor},
 
-  Sincerely,
-  {corresponding_author}
+      We submit for your consideration our manuscript titled "{title}", an
+      original research study reporting {methods_summary}. Our findings —
+      {results_summary} — represent [NOVELTY: 1-2 sentences explaining
+      what's new and why Clinical Oral Implants Research is the right
+      home].
+
+      {authors_summary}. The manuscript has not been published or submitted
+      elsewhere; all authors have approved the submission. Conflicts of
+      interest and funding sources are disclosed on the title page.
+
+      Sincerely,
+      {corresponding_author}
+
+  case-report:
+    # COIR rarely publishes traditional case reports — they're typically
+    # framed as Short Communications. We use the case-report block for
+    # both labels (the canonical's display can be edited if a contributor
+    # prefers "Short Communication" wording).
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 150  # TODO verify
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: clinical_report
+        display: Clinical Report
+        aliases: [Clinical Report, Case Report, Case Description, Patient History, Case Presentation, Short Communication]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion]
+        word_limit: null
+        required: false
+      - canonical: summary
+        display: Conclusions
+        aliases: [Summary, Conclusion, Conclusions]
+        word_limit: null
+        required: true
+    abstract:
+      format: unstructured
+      subsections: []
+      word_limit: 150  # TODO verify
+    total_word_limit: 1500  # TODO verify — COIR short comms are tighter
+    cover_letter_template: |
+      Dear {editor},
+
+      We submit for your consideration a clinical report titled "{title}",
+      which describes {methods_summary}. [NOVELTY: 1-2 sentences explaining
+      what this case adds to the implant literature].
+
+      {authors_summary}. The manuscript has not been published or submitted
+      elsewhere; all authors have approved the submission.
+
+      Sincerely,
+      {corresponding_author}
+
+  technique:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 150  # TODO verify
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: technique
+        display: Technique
+        aliases: [Technique, Procedure, Method, Step-by-Step]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion, Clinical Considerations]
+        word_limit: null
+        required: false
+      - canonical: summary
+        display: Conclusions
+        aliases: [Summary, Conclusion, Conclusions]
+        word_limit: null
+        required: true
+    abstract:
+      format: unstructured
+      subsections: []
+      word_limit: 150  # TODO verify
+    total_word_limit: 2000  # TODO verify
+    cover_letter_template: |
+      Dear {editor},
+
+      We submit for your consideration a clinical technique titled "{title}",
+      which describes {methods_summary}. [NOVELTY: 1-2 sentences explaining
+      the surgical/prosthetic advantage of this technique].
+
+      {authors_summary}. The manuscript has not been published or submitted
+      elsewhere; all authors have approved the submission.
+
+      Sincerely,
+      {corresponding_author}
+
+  systematic-review:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 250  # TODO verify
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: methods
+        display: Material and Methods
+        aliases: [Methods, Materials and Methods, Material and Methods, Search Strategy]
+        word_limit: null
+        required: true
+      - canonical: results
+        display: Results
+        aliases: [Results, Findings]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion]
+        word_limit: null
+        required: true
+      - canonical: conclusions
+        display: Conclusions
+        aliases: [Conclusion, Conclusions]
+        word_limit: null
+        required: true
+    abstract:
+      format: structured
+      subsections:
+        - Objectives
+        - Material and Methods
+        - Results
+        - Conclusions
+      word_limit: 250  # TODO verify
+    total_word_limit: 7500  # TODO verify
+    cover_letter_template: |
+      Dear {editor},
+
+      We submit for your consideration a systematic review titled "{title}",
+      which {methods_summary}. Our findings — {results_summary} — represent
+      [NOVELTY: 1-2 sentences explaining the gap this review fills in the
+      implant literature].
+
+      The protocol was registered with PROSPERO before data extraction
+      began [INSERT PROSPERO ID]. {authors_summary}. The manuscript has
+      not been published or submitted elsewhere; all authors have approved
+      the submission.
+
+      Sincerely,
+      {corresponding_author}
