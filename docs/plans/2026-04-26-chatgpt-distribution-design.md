@@ -1,5 +1,7 @@
 # ChatGPT distribution for manuscript-formatter — Design
 
+> **Historical implementation log.** This is the plan that was executed when the feature was built. Useful for understanding the design rationale or for forking the project; **not needed to use or self-host the skill** — see [README](../../README.md) and [`chatgpt/SETUP.md`](../../chatgpt/SETUP.md) for that.
+
 **Date:** 2026-04-26
 **Status:** Approved
 **Author:** Pablo Atria (with Claude Code, in auto mode)

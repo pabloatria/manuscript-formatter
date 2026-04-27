@@ -1,5 +1,7 @@
 # Article-Type Support v1.1 Implementation Plan
 
+> **Historical implementation log.** This is the plan that was executed when the feature was built. Useful for understanding the design rationale or for forking the project; **not needed to use or self-host the skill** — see [README](../../README.md) and [`chatgpt/SETUP.md`](../../chatgpt/SETUP.md) for that.
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Add `--article-type` flag to `manuscript-formatter` so it correctly handles research, case-report, technique, and systematic-review article types — without silently mis-formatting non-IMRAD manuscripts as v1 currently does.
@@ -10,7 +12,7 @@
 
 **Design reference:** `docs/plans/2026-04-26-article-types-v1.1-design.md`
 
-**Project location:** `/Users/pabloatria/Downloads/manuscript-formatter`. Current head: latest on `main` after the ChatGPT distribution work. Test count: 146.
+**Project location:** `<repo>`. Current head: latest on `main` after the ChatGPT distribution work. Test count: 146.
 
 ---
 
@@ -123,7 +125,7 @@ article_types:
 **Step 4:** Stage but don't commit yet — we'll commit Tasks 1+2 together once the loader supports the new shape and tests pass.
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 git add scripts/journals/jpd.yaml
 git status --short  # confirm staged
 ```
@@ -219,8 +221,8 @@ def test_each_journal_loads_research(slug):
 **Step 2:** Run the tests — expect failures (loader doesn't accept `article_type` yet, and Tasks 3+ haven't migrated other journals so they'll fail to load).
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
-/opt/homebrew/bin/python3.13 -m pytest tests/test_journal_config.py -v
+cd <repo>
+python3 -m pytest tests/test_journal_config.py -v
 ```
 
 Most failures will be "missing top-level key 'article_types'" for the 10 journals not yet migrated — that's expected; we'll migrate them in Tasks 5-9.
@@ -356,7 +358,7 @@ def load_journal(slug: str, config_dir: Path,
 **Step 4:** Run the journal-config tests. The new tests for JPD-specific shape should pass, plus the existing ones. The parametrized test on the 10 unmigrated journals will fail — that's expected; we'll fix in Tasks 5-9.
 
 ```bash
-/opt/homebrew/bin/python3.13 -m pytest tests/test_journal_config.py -v 2>&1 | tail -30
+python3 -m pytest tests/test_journal_config.py -v 2>&1 | tail -30
 ```
 
 Expected: JPD tests pass; other 10 fail with "missing 'article_types' map (v1.1 schema)".
@@ -444,7 +446,7 @@ def test_cli_invalid_article_type_rejected(tmp_path):
 **Step 2:** Run — expect failures (flag doesn't exist yet).
 
 ```bash
-/opt/homebrew/bin/python3.13 -m pytest tests/test_cli.py -v
+python3 -m pytest tests/test_cli.py -v
 ```
 
 **Step 3: Modify `scripts/format_manuscript.py`** — add the flag to the argparse block, thread it through to `load_journal()`:
@@ -475,7 +477,7 @@ Update the `load_journal` call:
 **Step 4:** Run the CLI tests — expect 3/3 new tests pass.
 
 ```bash
-/opt/homebrew/bin/python3.13 -m pytest tests/test_cli.py -v
+python3 -m pytest tests/test_cli.py -v
 ```
 
 **Step 5: Commit**
@@ -663,7 +665,7 @@ def test_jpd_loads_all_four_article_types(article_type):
 **Step 3:** Run.
 
 ```bash
-/opt/homebrew/bin/python3.13 -m pytest tests/test_journal_config.py -v
+python3 -m pytest tests/test_journal_config.py -v
 ```
 
 Expected: 4 new parametrized cases pass; existing JPD tests still pass; the 10 unmigrated journals' tests still fail.
@@ -758,8 +760,8 @@ if __name__ == "__main__":
 **Step 2:** Run the builder.
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
-/opt/homebrew/bin/python3.13 tests/fixtures/build_fixtures.py
+cd <repo>
+python3 tests/fixtures/build_fixtures.py
 ```
 
 Expected: both fixtures regenerate. The existing `minimal_manuscript.docx` should be byte-identical to before (deterministic builder); the new `clinical_report_manuscript.docx` is added.
@@ -796,7 +798,7 @@ def test_reformat_clinical_report_preserves_clinical_report_heading(tmp_path):
 **Step 4:** Run.
 
 ```bash
-/opt/homebrew/bin/python3.13 -m pytest tests/test_section_reformat.py -v
+python3 -m pytest tests/test_section_reformat.py -v
 ```
 
 Expected: new test passes. Existing tests still pass.
@@ -836,7 +838,7 @@ The full content for jerd.yaml is too long to inline here; structure it analogou
 **Step 2:** Run journal-config tests for jerd.
 
 ```bash
-/opt/homebrew/bin/python3.13 -m pytest tests/test_journal_config.py -v -k jerd
+python3 -m pytest tests/test_journal_config.py -v -k jerd
 ```
 
 Expected: jerd-specific cases pass.
@@ -920,7 +922,7 @@ Identical for `technique:` and `systematic-review:`.
 **Step 2:** Run the parametrized journal-config test.
 
 ```bash
-/opt/homebrew/bin/python3.13 -m pytest tests/test_journal_config.py -v
+python3 -m pytest tests/test_journal_config.py -v
 ```
 
 Expected: 11/11 journals load with `article_type="research"`. Attempting the placeholder types raises the clear "placeholder, not yet populated" error from Task 2.
@@ -1044,7 +1046,7 @@ Parameter grid: 5 fully-populated journals × 4 types + 6 research-only × 1 = 2
 **Step 2:** Run.
 
 ```bash
-/opt/homebrew/bin/python3.13 -m pytest tests/test_text_preservation_invariant.py -v 2>&1 | tail -30
+python3 -m pytest tests/test_text_preservation_invariant.py -v 2>&1 | tail -30
 ```
 
 Expected: all 52 pass. If any fail (e.g., a TODO-marked alias collides with the fixture's heading and produces an unexpected rename), surface the slug/type/diff and we iterate.
@@ -1139,7 +1141,7 @@ Add to edge cases: "Five journals (JPD, JERD, JOMI, COIR, IJP) support all 4 art
 **Step 2:** Verify the docs render and run pytest one last time.
 
 ```bash
-/opt/homebrew/bin/python3.13 -m pytest 2>&1 | tail -3
+python3 -m pytest 2>&1 | tail -3
 ```
 
 Expected: ~210 passed (146 v1 + ~60 new v1.1 tests).
@@ -1172,7 +1174,7 @@ research-only journals."
 **Step 1:** Re-run `chatgpt/build_zip.sh`.
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 ./chatgpt/build_zip.sh
 ```
 
@@ -1184,7 +1186,7 @@ Expected: zip rebuilds with the new YAMLs and `format_manuscript.py`. Size grows
 TMP=$(mktemp -d)
 unzip -q manuscript_formatter.zip -d "$TMP/skill"
 mkdir "$TMP/out"
-/opt/homebrew/bin/python3.13 "$TMP/skill/scripts/format_manuscript.py" \
+python3 "$TMP/skill/scripts/format_manuscript.py" \
     tests/fixtures/clinical_report_manuscript.docx \
     --references tests/fixtures/sample_zotero.json \
     --journal jpd \
@@ -1198,7 +1200,7 @@ Expected: clean run, report mentions Clinical Report (not over-limit warnings fo
 **Step 3:** Final pytest run.
 
 ```bash
-/opt/homebrew/bin/python3.13 -m pytest 2>&1 | tail -3
+python3 -m pytest 2>&1 | tail -3
 ```
 
 Expected: all green.
@@ -1224,7 +1226,7 @@ That's documented in `docs/maintainer-notes.md` already — no doc change needed
 ## Verification before declaring complete
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 pytest 2>&1 | tail -3            # ~210 passed expected
 git status --short                # nothing
 git log --oneline | head -15      # ~12 v1.1 commits since the design doc

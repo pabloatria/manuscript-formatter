@@ -1,5 +1,7 @@
 # Manuscript Formatter Implementation Plan
 
+> **Historical implementation log.** This is the plan that was executed when the feature was built. Useful for understanding the design rationale or for forking the project; **not needed to use or self-host the skill** — see [README](../../README.md) and [`chatgpt/SETUP.md`](../../chatgpt/SETUP.md) for that.
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Build a Claude skill that reformats a finished `.docx` manuscript for any of 11 dental journals — moving sections, renaming headings, regenerating references from a manager export, flagging word-count/structure problems — without altering a single byte of the author's prose.
@@ -10,7 +12,7 @@
 
 **Design reference:** `docs/plans/2026-04-26-manuscript-formatter-design.md`
 
-**Project location:** `/Users/pabloatria/Downloads/manuscript-formatter` (already initialized as a git repo with the design doc committed).
+**Project location:** `<repo>` (already initialized as a git repo with the design doc committed).
 
 ---
 
@@ -26,7 +28,7 @@ The text-preservation invariant (body paragraphs byte-identical) is the most imp
 
 **Files:**
 - Create: `.gitignore`
-- Create: `LICENSE` (MIT, copy verbatim from `/Users/pabloatria/Downloads/pubmed-brief/LICENSE`)
+- Create: `LICENSE` (MIT, copy verbatim from `<sibling repo>/LICENSE`)
 - Create: `pyproject.toml` (minimal, declares python_requires + deps for `pip install -e`)
 - Create: `pytest.ini`
 - Create: empty placeholders: `scripts/__init__.py`, `tests/__init__.py`
@@ -34,7 +36,7 @@ The text-preservation invariant (body paragraphs byte-identical) is the most imp
 **Step 1:** Copy `LICENSE` from pubmed-brief.
 
 ```bash
-cp /Users/pabloatria/Downloads/pubmed-brief/LICENSE /Users/pabloatria/Downloads/manuscript-formatter/LICENSE
+cp <sibling repo>/LICENSE <repo>/LICENSE
 ```
 
 **Step 2:** Write `.gitignore`:
@@ -112,7 +114,7 @@ touch scripts/__init__.py tests/__init__.py
 **Step 6:** Install in editable mode + test deps; verify pytest runs.
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 python3 -m pip install --quiet --break-system-packages -e ".[dev]"
 pytest --collect-only 2>&1 | tail -3
 ```
@@ -1096,7 +1098,7 @@ git commit -m "refs: RIS parser → CSL JSON (EndNote alt-export path)"
 **Step 1: Download the JPD CSL style**
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 curl -sL -o scripts/csl/journal-of-prosthetic-dentistry.csl \
   "https://raw.githubusercontent.com/citation-style-language/styles/master/journal-of-prosthetic-dentistry.csl"
 head -3 scripts/csl/journal-of-prosthetic-dentistry.csl
@@ -1621,7 +1623,7 @@ git commit -m "journals: ship 11 journal configs (JPD, JOMI, COIR, JDR, JADA, J 
 the CSL repo are slug-cased; verify each:
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter/scripts/csl
+cd <repo>/scripts/csl
 BASE="https://raw.githubusercontent.com/citation-style-language/styles/master"
 for slug in \
     "international-journal-of-oral-and-maxillofacial-implants" \
@@ -1740,7 +1742,7 @@ git commit -m "test: invariant — body prose byte-identical for all 11 journals
 **Step 1:** Copy the install.sh skeleton from pubmed-brief and adapt:
 
 ```bash
-cp /Users/pabloatria/Downloads/pubmed-brief/install.sh /Users/pabloatria/Downloads/manuscript-formatter/install.sh
+cp <sibling repo>/install.sh <repo>/install.sh
 ```
 
 Replace the skill name and the dep list (manuscripts deps not pubmed deps):
@@ -1774,7 +1776,7 @@ Replace the skill name and the dep list (manuscripts deps not pubmed deps):
 **Step 5:** Verify — `cat` each file, sanity-check.
 
 ```bash
-ls -la /Users/pabloatria/Downloads/manuscript-formatter/
+ls -la <repo>/
 ```
 
 Expected: SKILL.md, README.md, SECURITY.md, LICENSE, install.sh, scripts/, tests/, docs/.
@@ -1802,7 +1804,7 @@ gh auth status 2>&1 | head -3
 **Step 2:** Create the public repo + push.
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 gh repo create manuscript-formatter --public --source=. --remote=origin \
   --description "Reformat dental research manuscripts for journal submission. Same prose, journal-correct structure + references." \
   --push
@@ -1872,7 +1874,7 @@ python3 scripts/format_manuscript.py ~/Downloads/splints-draft.docx \
 Per superpowers:verification-before-completion:
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 pytest -v 2>&1 | tail -5     # expect all green
 git status --short            # expect nothing
 git log --oneline | head -25  # ~20 commits

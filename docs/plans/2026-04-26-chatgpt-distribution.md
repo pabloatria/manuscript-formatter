@@ -1,5 +1,7 @@
 # manuscript-formatter ChatGPT Distribution Implementation Plan
 
+> **Historical implementation log.** This is the plan that was executed when the feature was built. Useful for understanding the design rationale or for forking the project; **not needed to use or self-host the skill** — see [README](../../README.md) and [`chatgpt/SETUP.md`](../../chatgpt/SETUP.md) for that.
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Publish a public ChatGPT Custom GPT for `manuscript-formatter` that runs the same code as the Claude skill, so users on either platform get identical 11-journal coverage with the same prose-preserving guarantee.
@@ -10,7 +12,7 @@
 
 **Design reference:** `docs/plans/2026-04-26-chatgpt-distribution-design.md`
 
-**Project location:** `/Users/pabloatria/Downloads/manuscript-formatter`. Current head: latest commit on `main` (after Task 20 published the Claude skill).
+**Project location:** `<repo>`. Current head: latest commit on `main` (after Task 20 published the Claude skill).
 
 ---
 
@@ -35,8 +37,8 @@ Each task ends with a clean commit. No new pytest tests are added — this work 
 **Step 1:** Create the script.
 
 ```bash
-mkdir -p /Users/pabloatria/Downloads/manuscript-formatter/chatgpt
-cat > /Users/pabloatria/Downloads/manuscript-formatter/chatgpt/build_zip.sh <<'EOF'
+mkdir -p <repo>/chatgpt
+cat > <repo>/chatgpt/build_zip.sh <<'EOF'
 #!/usr/bin/env bash
 # Build the Knowledge upload for the manuscript-formatter Custom GPT.
 # Reproducible from the current scripts/ tree — no parallel maintenance.
@@ -69,13 +71,13 @@ SIZE=$(du -h "$OUT" | cut -f1)
 COUNT=$(unzip -l "$OUT" | tail -1 | awk '{print $2}')
 echo "✓ wrote $OUT (${SIZE}, ${COUNT} files)"
 EOF
-chmod +x /Users/pabloatria/Downloads/manuscript-formatter/chatgpt/build_zip.sh
+chmod +x <repo>/chatgpt/build_zip.sh
 ```
 
 **Step 2:** Run it.
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 ./chatgpt/build_zip.sh
 ```
 
@@ -88,7 +90,7 @@ TMP=$(mktemp -d)
 unzip -q manuscript_formatter.zip -d "$TMP/skill"
 ls "$TMP/skill/scripts/"
 # Run the CLI from the extracted location against the existing fixture
-/opt/homebrew/bin/python3.13 "$TMP/skill/scripts/format_manuscript.py" \
+python3 "$TMP/skill/scripts/format_manuscript.py" \
     tests/fixtures/minimal_manuscript.docx \
     --references tests/fixtures/sample_zotero.json \
     --journal jpd \
@@ -110,7 +112,7 @@ manuscript_formatter.zip
 **Step 5:** Commit.
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 git add chatgpt/build_zip.sh .gitignore
 git commit -m "chatgpt: reproducible Knowledge bundle build script
 
@@ -223,12 +225,12 @@ format_manuscript.py against the standard fixture, confirmed identical
 - **Maintenance** — re-run `./chatgpt/build_zip.sh` and re-upload the
   zip when `scripts/` changes upstream.
 
-**Step 2:** Verify section count: `grep -E "^(##|###) " /Users/pabloatria/Downloads/manuscript-formatter/chatgpt/SETUP.md`.
+**Step 2:** Verify section count: `grep -E "^(##|###) " <repo>/chatgpt/SETUP.md`.
 
 **Step 3:** Commit (along with Task 2's file).
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 git add chatgpt/CUSTOM_GPT_INSTRUCTIONS.md chatgpt/SETUP.md
 git commit -m "chatgpt: setup walkthrough + Custom GPT instructions
 
@@ -315,7 +317,7 @@ on ChatGPT gets zero-install.
 **Step 2:** Commit.
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 git add docs/maintainer-notes.md
 git commit -m "docs: maintainer-only workflow notes for dual distribution
 
@@ -335,7 +337,7 @@ apply to their fork."
 **Step 1:** Read the current Install section.
 
 ```bash
-grep -n "^## Install" /Users/pabloatria/Downloads/manuscript-formatter/README.md
+grep -n "^## Install" <repo>/README.md
 ```
 
 **Step 2:** Replace the existing Install block (whatever single-platform form it currently takes) with the two-path version:
@@ -379,7 +381,7 @@ replacing whatever current single-platform install instructions exist.
 **Step 4:** Verify rendered Markdown looks right.
 
 ```bash
-sed -n '/^## Install/,/^## /p' /Users/pabloatria/Downloads/manuscript-formatter/README.md | head -40
+sed -n '/^## Install/,/^## /p' <repo>/README.md | head -40
 ```
 
 Confirm: Install section near top, Claude + ChatGPT sub-sections, both
@@ -388,7 +390,7 @@ with sensible content, ChatGPT URL is the placeholder.
 **Step 5:** Commit.
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 git add README.md
 git commit -m "README: add ChatGPT install path (placeholder URL)
 
@@ -407,8 +409,8 @@ the GPT lands in the public store."
 **Step 1:** Re-run the full test suite to confirm the docs/build-script work didn't accidentally break anything.
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
-/opt/homebrew/bin/python3.13 -m pytest 2>&1 | tail -3
+cd <repo>
+python3 -m pytest 2>&1 | tail -3
 ```
 
 Expected: **146 passed**.
@@ -464,7 +466,7 @@ Expected: a small number of commits land on `origin/main`.
 ## Task 8 (after URL received): Fill in the README placeholder
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 sed -i '' 's|https://chatgpt.com/g/g-XXXXX-manuscript-formatter|<REAL_URL>|g' README.md
 git add README.md
 git commit -m "docs: link to published Manuscript Formatter Custom GPT"
@@ -486,7 +488,7 @@ git push
 ## Verification before declaring complete
 
 ```bash
-cd /Users/pabloatria/Downloads/manuscript-formatter
+cd <repo>
 pytest 2>&1 | tail -3            # expect 146 passed
 git status --short               # expect nothing
 git log --oneline | head -10     # ~5 new commits since the design doc
