@@ -75,6 +75,19 @@ Match the user's request to one of the 11 supported slugs:
 
 If the user's request is ambiguous (e.g. "format this for a periodontics journal"), ask before running.
 
+### Phase 3.5 — Pick the article type
+
+Match against:
+
+- `research` (default) — original research, cohort studies, in vitro studies, RCTs, materials science
+- `case-report` — single-patient or small-series clinical descriptions
+- `technique` — step-by-step procedure or technique articles
+- `systematic-review` — systematic reviews and meta-analyses
+
+If the user's request doesn't make the type obvious, ask. If the manuscript already has a "Clinical Report", "Technique", or "Search Strategy" heading, that's a strong signal. If unclear, default to `research`.
+
+**Coverage:** JPD, JERD, JOMI, COIR, and Int J Prosthodont support all 4 article types. The other 6 (JDR, JADA, J Dent, J Periodontol, J Endod, Oper Dent) only support `research` in this version — passing a different type returns a clear "not yet supported for this journal" error and the user should pick a journal that supports their type, or ask Pablo to populate it.
+
 ### Phase 4 — Run the CLI
 
 ```bash
@@ -82,11 +95,12 @@ python /mnt/data/skill/scripts/format_manuscript.py \
   /mnt/data/<manuscript>.docx \
   --references /mnt/data/<refs>.<ext> \
   --journal <slug> \
+  --article-type <research|case-report|technique|systematic-review> \
   --out-dir /mnt/data/ \
   [--cover-letter --editor "Dr. <Name>"]
 ```
 
-Pass `--cover-letter` only if the user asked for one. Pass `--editor` only if the user named the editor.
+`--article-type` defaults to `research` if omitted. Pass `--cover-letter` only if the user asked for one. Pass `--editor` only if the user named the editor.
 
 ### Phase 5 — Surface the report
 

@@ -65,6 +65,17 @@ Requires ChatGPT Plus. Attach your `.docx` manuscript and reference-manager expo
 
 Prefer your own copy (branded differently, or as a backup)? Full self-hosting instructions in [`chatgpt/SETUP.md`](./chatgpt/SETUP.md) — ~10 minutes. Tradeoffs vs. the Claude skill (Mendeley BibTeX caveat, session-bound `/mnt/data/`) are documented there.
 
+### Supported article types (v1.1)
+
+| Slug | Type | Notes |
+|---|---|---|
+| `research` (default) | Original research / clinical science | Full IMRAD. Default if `--article-type` is omitted. |
+| `case-report` | Clinical reports (case reports) | Abstract → Introduction → Clinical Report → Discussion (optional) → Summary |
+| `technique` | Dental Technique articles | Abstract → Introduction → Technique → Discussion (optional) → Summary |
+| `systematic-review` | Systematic reviews and meta-analyses | PRISMA-aware structure; PROSPERO mention in cover letter |
+
+**Coverage matrix:** JPD, JERD, JOMI, COIR, and Int J Prosthodont support all 4 article types. The other 6 journals (JDR, JADA, J Dent, J Periodontol, J Endod, Oper Dent) currently support `research` only — passing a different `--article-type` returns a clear "not yet supported for this journal" error rather than silently mis-formatting.
+
 ## Use it (Claude)
 
 In Claude Desktop or Claude Code, just ask naturally:
@@ -74,10 +85,12 @@ In Claude Desktop or Claude Code, just ask naturally:
 "Convert this manuscript to JDR style"
 "Format ~/Downloads/draft.docx for J Periodontol with cover letter"
 "Apply COIR style and tell me what's over the word limit"
-"Prepare this for submission to JPD using my Zotero export"
+"Prepare this case report for JPD"
+"Format my systematic review for JOMI with PROSPERO ID 12345"
+"Reformat this technique article for JERD"
 ```
 
-The skill auto-triggers, runs the formatter, and surfaces the validation report back to you. Takes a few seconds.
+The skill auto-triggers, identifies the article type from your request (or asks if ambiguous), runs the formatter, and surfaces the validation report back to you. Takes a few seconds.
 
 ## Use it without Claude (manual mode)
 
@@ -86,6 +99,7 @@ python3 scripts/format_manuscript.py \
   ~/Downloads/draft.docx \
   --references ~/Downloads/library.json \
   --journal jpd \
+  --article-type case-report \
   --out-dir ~/Downloads/ \
   --cover-letter \
   --editor "Dr. Last Name"
@@ -96,6 +110,7 @@ Flags:
 - `manuscript` *(positional, required)* — the input `.docx`.
 - `--references` *(required)* — path to a Zotero `.json`, Mendeley `.bib`, or EndNote `.xml` / `.ris` export.
 - `--journal` *(required)* — one of the 11 slugs in the table above.
+- `--article-type` — one of `research` (default), `case-report`, `technique`, `systematic-review`.
 - `--out-dir` — default `~/Downloads/`.
 - `--cover-letter` — also generate the cover-letter draft.
 - `--editor` — name to fill into the cover letter's salutation. Leaves the `[EDITOR]` placeholder if omitted.

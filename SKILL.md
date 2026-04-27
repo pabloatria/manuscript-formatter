@@ -59,6 +59,16 @@ Before invoking the script, confirm:
 
 If the journal isn't on the list, ask the user which of these is closest — do not silently fall back.
 
+4. **Identify the article type.** Pick one of:
+   - `research` (default) — original research, in vitro studies, RCTs, cohort studies, materials science
+   - `case-report` — single-patient or small-series clinical descriptions ("we report a case of…")
+   - `technique` — step-by-step procedure / dental technique articles
+   - `systematic-review` — systematic reviews and meta-analyses (PRISMA / PROSPERO)
+
+   If the user's request doesn't make the type obvious, ask. If the manuscript already has a "Clinical Report" or "Technique" or "Search Strategy" heading, those are strong signals. If the user just says "reformat for X journal" without specifying type, default to `research`.
+
+   **Coverage:** JPD, JERD, JOMI, COIR, and Int J Prosthodont support all 4 types. The other 6 journals only support `research` in v1.1 — passing a different `--article-type` returns a clear "not yet supported for this journal" error.
+
 ### Phase 2 — Run the formatter
 
 ```bash
@@ -68,9 +78,12 @@ python3 "$SKILL_DIR/scripts/format_manuscript.py" \
   "<absolute path to manuscript.docx>" \
   --references "<absolute path to references file>" \
   --journal "<slug>" \
+  --article-type "<research|case-report|technique|systematic-review>" \
   --out-dir "$HOME/Downloads" \
   [--cover-letter --editor "Dr. Last Name"]
 ```
+
+`--article-type` defaults to `research` if omitted. Pass it explicitly when the user submits anything other than original research.
 
 The script writes three files into `--out-dir`:
 
