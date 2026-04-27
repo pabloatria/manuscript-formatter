@@ -1,75 +1,109 @@
-name: Journal of Periodontology
-abbreviation: J Periodontol
-sections:
-  - canonical: abstract
-    display: Abstract
-    aliases: [Abstract, Summary]
-    word_limit: 250
-    required: true
-  - canonical: introduction
-    display: Background
-    aliases: [Introduction, Background]
-    word_limit: null
-    required: true
-  - canonical: purpose
-    display: Aim
-    aliases: [Purpose, Aim, Objective, Objectives]
-    word_limit: null
-    required: true
-  - canonical: methods
-    display: Methods
-    aliases: [Methods, Materials and Methods, Material and Methods]
-    word_limit: null
-    required: true
-  - canonical: results
-    display: Results
-    aliases: [Results, Findings]
-    word_limit: null
-    required: true
-  - canonical: discussion
-    display: Discussion
-    aliases: [Discussion]
-    word_limit: null
-    required: true
-  - canonical: conclusions
-    display: Conclusions
-    aliases: [Conclusion, Conclusions]
-    word_limit: null
-    required: true
-abstract:
-  format: structured
-  subsections:
-    - Background
-    - Methods
-    - Results
-    - Conclusions
-  word_limit: 250
-total_word_limit: 5000
 reference_style: journal-of-periodontology.csl
-title_page:
-  separate_file: true
-  required_blocks: [authors, affiliations, corresponding_author, conflicts, funding, irb]
-figures:
-  embedded: false
-  legend_format: "Figure {n}. {caption}"
-  numbering: "Figure {n}"
 guidelines:
-  font: "Times New Roman"
+  font: Times New Roman
   font_size: 12
   line_spacing: 2.0
   margins_cm: 2.54
   page_numbers: true
-cover_letter_template: |
-  Dear {editor},
-
-  We submit for your consideration our manuscript titled "{title}", which
-  reports {methods_summary}. Our findings — {results_summary} — represent
-  [NOVELTY: 1-2 sentences explaining what's new and why the Journal of
-  Periodontology is the right home].
-
-  {authors_summary}. The manuscript has not been published or submitted
-  elsewhere; all authors have approved the submission. Conflicts of interest
-  and funding sources are disclosed on the title page.
-
-  Sincerely,
-  {corresponding_author}
+title_page:
+  separate_file: true
+  required_blocks:
+  - authors
+  - affiliations
+  - corresponding_author
+  - conflicts
+  - funding
+  - irb
+abbreviation: J Periodontol
+name: Journal of Periodontology
+figures:
+  embedded: false
+  legend_format: Figure {n}. {caption}
+  numbering: Figure {n}
+article_types:
+  research:
+    cover_letter_template: "Dear {editor},\n\nWe submit for your consideration our manuscript titled \"\
+      {title}\", which\nreports {methods_summary}. Our findings \u2014 {results_summary} \u2014 represent\n\
+      [NOVELTY: 1-2 sentences explaining what's new and why the Journal of\nPeriodontology is the right\
+      \ home].\n\n{authors_summary}. The manuscript has not been published or submitted\nelsewhere; all\
+      \ authors have approved the submission. Conflicts of interest\nand funding sources are disclosed\
+      \ on the title page.\n\nSincerely,\n{corresponding_author}\n"
+    sections:
+    - canonical: abstract
+      display: Abstract
+      aliases:
+      - Abstract
+      - Summary
+      word_limit: 250
+      required: true
+    - canonical: introduction
+      display: Background
+      aliases:
+      - Introduction
+      - Background
+      word_limit: null
+      required: true
+    - canonical: purpose
+      display: Aim
+      aliases:
+      - Purpose
+      - Aim
+      - Objective
+      - Objectives
+      word_limit: null
+      required: true
+    - canonical: methods
+      display: Methods
+      aliases:
+      - Methods
+      - Materials and Methods
+      - Material and Methods
+      word_limit: null
+      required: true
+    - canonical: results
+      display: Results
+      aliases:
+      - Results
+      - Findings
+      word_limit: null
+      required: true
+    - canonical: discussion
+      display: Discussion
+      aliases:
+      - Discussion
+      word_limit: null
+      required: true
+    - canonical: conclusions
+      display: Conclusions
+      aliases:
+      - Conclusion
+      - Conclusions
+      word_limit: null
+      required: true
+    abstract:
+      format: structured
+      subsections:
+      - Background
+      - Methods
+      - Results
+      - Conclusions
+      word_limit: 250
+    total_word_limit: 5000
+  case-report:
+    sections: &id001 []
+    abstract: &id002
+      format: unstructured
+      subsections: []
+      word_limit: null
+    total_word_limit: null
+    cover_letter_template: ''
+  technique:
+    sections: *id001
+    abstract: *id002
+    total_word_limit: null
+    cover_letter_template: ''
+  systematic-review:
+    sections: *id001
+    abstract: *id002
+    total_word_limit: null
+    cover_letter_template: ''

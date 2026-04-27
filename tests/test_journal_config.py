@@ -170,3 +170,17 @@ def test_jpd_loads_all_four_article_types(article_type):
     cfg = load_journal("jpd", config_dir=CONFIG_DIR, article_type=article_type)
     assert cfg["sections"]
     assert cfg["abstract"]["word_limit"] is not None or article_type == "tip"
+
+
+# v1.1: research-only journals reject placeholder types with a clear
+# 'not yet supported' error rather than silently mis-formatting.
+RESEARCH_ONLY_JOURNALS = ["jdr", "jada", "j-dent", "j-periodontol",
+                          "j-endod", "oper-dent"]
+
+
+@pytest.mark.parametrize("slug", RESEARCH_ONLY_JOURNALS)
+@pytest.mark.parametrize("article_type",
+                          ["case-report", "technique", "systematic-review"])
+def test_research_only_journals_reject_placeholder_types(slug, article_type):
+    with pytest.raises(JournalConfigError, match="not yet supported"):
+        load_journal(slug, config_dir=CONFIG_DIR, article_type=article_type)
