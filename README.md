@@ -7,6 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776AB.svg)](https://www.python.org/downloads/)
 [![Security](https://img.shields.io/badge/security-audited-success.svg)](./SECURITY.md)
+[![Latest Release](https://img.shields.io/github/v/release/pabloatria/manuscript-formatter)](https://github.com/pabloatria/manuscript-formatter/releases/latest)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/pulls)
 
 You finished the manuscript. Now the journal asks for 250-word abstracts instead of 300, Vancouver-numeric citations instead of author–year, headings in a specific order, and a cover letter on top. `manuscript-formatter` does the structural reformat — page setup, headings, citation rendering, word/figure/table validation, optional cover letter — and leaves your prose byte-identical to what you wrote.
@@ -75,6 +76,14 @@ Prefer your own copy (branded differently, or as a backup)? Full self-hosting in
 | `systematic-review` | Systematic reviews and meta-analyses | PRISMA-aware structure; PROSPERO mention in cover letter |
 
 **Coverage matrix:** JPD, JERD, JOMI, COIR, and Int J Prosthodont support all 4 article types. The other 6 journals (JDR, JADA, J Dent, J Periodontol, J Endod, Oper Dent) currently support `research` only — passing a different `--article-type` returns a clear "not yet supported for this journal" error rather than silently mis-formatting.
+
+## Updating
+
+Each tagged release on [the Releases page](https://github.com/pabloatria/manuscript-formatter/releases) carries the changelog and update instructions for that version. Quick summary:
+
+- **ChatGPT users** — no action needed. The published [Custom GPT](https://chatgpt.com/g/g-69ef6e90a788819193a06a73f09b5f21-manuscript-formatter-by-dr-pablo-atria) URL is permanent and always serves the latest code.
+- **Claude users (local clone)** — `cd ~/.claude/skills/manuscript-formatter && git pull && ./install.sh`. The installer is idempotent and picks up new dependencies (e.g., `defusedxml` was added in v1.1.0).
+- **Custom GPT maintainers (forks)** — `git pull && ./chatgpt/build_zip.sh`, then re-upload `manuscript_formatter.zip` to your GPT's Knowledge and re-paste `chatgpt/CUSTOM_GPT_INSTRUCTIONS.md` into the Instructions field.
 
 ## Use it (Claude)
 
