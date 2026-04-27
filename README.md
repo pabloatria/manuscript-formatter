@@ -221,7 +221,7 @@ MIT. Use it, fork it, ship it commercially. Just don't blame me if a journal rej
 
 ## Author
 
-Built by **Pablo J. Atria** — clinician-researcher, NYU College of Dentistry.
+Built by **Pablo J. Atria** — clinician-researcher, NYU College of Dentistry. Co-director, [AS Odontología Digital](https://www.asodontologiadigital.cl). Instagram [@pabloatria](https://www.instagram.com/pabloatria).
 
 Built for daily use in research and clinical practice. Released publicly because there's no reason every clinician should rebuild this from scratch every submission.
 
