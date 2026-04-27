@@ -86,7 +86,7 @@ article_types:
     sections:
       - canonical: abstract
         display: Abstract
-        aliases: [Abstract, Summary]
+        aliases: [Abstract]
         word_limit: 150  # TODO verify
         required: true
       - canonical: introduction
@@ -131,7 +131,7 @@ article_types:
     sections:
       - canonical: abstract
         display: Abstract
-        aliases: [Abstract, Summary]
+        aliases: [Abstract]
         word_limit: 150  # TODO verify
         required: true
       - canonical: introduction
