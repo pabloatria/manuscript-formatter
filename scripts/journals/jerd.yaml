@@ -1,76 +1,237 @@
 name: Journal of Esthetic and Restorative Dentistry
 abbreviation: J Esthet Restor Dent
-sections:
-  - canonical: abstract
-    display: Abstract
-    aliases: [Abstract, Summary]
-    word_limit: 250
-    required: true
-  - canonical: introduction
-    display: Introduction
-    aliases: [Introduction, Background]
-    word_limit: null
-    required: true
-  - canonical: purpose
-    display: Objectives
-    aliases: [Purpose, Aim, Objective, Objectives]
-    word_limit: null
-    required: true
-  - canonical: methods
-    display: Materials and Methods
-    aliases: [Methods, Materials and Methods, Material and Methods]
-    word_limit: null
-    required: true
-  - canonical: results
-    display: Results
-    aliases: [Results, Findings]
-    word_limit: null
-    required: true
-  - canonical: discussion
-    display: Discussion
-    aliases: [Discussion]
-    word_limit: null
-    required: true
-  - canonical: conclusions
-    display: Conclusions
-    aliases: [Conclusion, Conclusions, Clinical Significance]
-    word_limit: null
-    required: true
-abstract:
-  format: structured
-  subsections:
-    - Objectives
-    - Materials and Methods
-    - Results
-    - Conclusions
-    - Clinical Significance
-  word_limit: 250
-total_word_limit: 4500
 reference_style: journal-of-esthetic-and-restorative-dentistry.csl
+
 title_page:
   separate_file: true
   required_blocks: [authors, affiliations, corresponding_author, conflicts, funding, irb]
+
 figures:
   embedded: false
   legend_format: "Figure {n}. {caption}"
   numbering: "Figure {n}"
+
 guidelines:
   font: "Times New Roman"
   font_size: 12
   line_spacing: 2.0
   margins_cm: 2.54
   page_numbers: true
-cover_letter_template: |
-  Dear {editor},
 
-  We submit for your consideration our manuscript titled "{title}", which
-  reports {methods_summary}. Our findings — {results_summary} — represent
-  [NOVELTY: 1-2 sentences explaining what's new and why the Journal of
-  Esthetic and Restorative Dentistry is the right home].
+article_types:
 
-  {authors_summary}. The manuscript has not been published or submitted
-  elsewhere; all authors have approved the submission. Conflicts of interest
-  and funding sources are disclosed on the title page.
+  research:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 250  # TODO verify against current JERD author guidelines
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: methods
+        display: Materials and Methods
+        aliases: [Methods, Materials and Methods, Material and Methods]
+        word_limit: null
+        required: true
+      - canonical: results
+        display: Results
+        aliases: [Results, Findings]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion]
+        word_limit: null
+        required: true
+      - canonical: conclusions
+        display: Conclusions
+        aliases: [Conclusion, Conclusions]
+        word_limit: null
+        required: true
+      - canonical: clinical_significance
+        display: Clinical Significance
+        aliases: [Clinical Significance, Clinical Implications, Clinical Relevance]
+        word_limit: null
+        required: true  # JERD-specific: required body section per the journal's submission template
+    abstract:
+      format: structured
+      subsections:
+        - Objectives
+        - Materials and Methods
+        - Results
+        - Conclusions
+        - Clinical Significance
+      word_limit: 250  # TODO verify
+    total_word_limit: 4000  # TODO verify
+    cover_letter_template: |
+      Dear {editor},
 
-  Sincerely,
-  {corresponding_author}
+      We submit for your consideration our manuscript titled "{title}",
+      an original research study reporting {methods_summary}. Our findings —
+      {results_summary} — represent [NOVELTY: 1-2 sentences explaining
+      what's new and why the Journal of Esthetic and Restorative Dentistry
+      is the right home].
+
+      {authors_summary}. The manuscript has not been published or submitted
+      elsewhere; all authors have approved the submission. Conflicts of
+      interest and funding sources are disclosed on the title page.
+
+      Sincerely,
+      {corresponding_author}
+
+  case-report:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 150  # TODO verify
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: clinical_report
+        display: Clinical Report
+        aliases: [Clinical Report, Case Report, Case Description, Patient History, Case Presentation]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion]
+        word_limit: null
+        required: false
+      - canonical: clinical_significance
+        display: Clinical Significance
+        aliases: [Clinical Significance, Clinical Implications]
+        word_limit: null
+        required: true  # JERD requires Clinical Significance even on case reports
+    abstract:
+      format: unstructured
+      subsections: []
+      word_limit: 150  # TODO verify
+    total_word_limit: 2000  # TODO verify
+    cover_letter_template: |
+      Dear {editor},
+
+      We submit for your consideration a clinical report titled "{title}",
+      which describes {methods_summary}. [NOVELTY: 1-2 sentences explaining
+      what this case adds to the esthetic-restorative literature].
+
+      {authors_summary}. The manuscript has not been published or submitted
+      elsewhere; all authors have approved the submission.
+
+      Sincerely,
+      {corresponding_author}
+
+  technique:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 150  # TODO verify
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: technique
+        display: Technique
+        aliases: [Technique, Procedure, Method, Step-by-Step]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion, Clinical Considerations]
+        word_limit: null
+        required: false
+      - canonical: clinical_significance
+        display: Clinical Significance
+        aliases: [Clinical Significance, Clinical Implications]
+        word_limit: null
+        required: true
+    abstract:
+      format: unstructured
+      subsections: []
+      word_limit: 150  # TODO verify
+    total_word_limit: 2000  # TODO verify
+    cover_letter_template: |
+      Dear {editor},
+
+      We submit for your consideration a clinical technique titled "{title}",
+      which describes {methods_summary}. [NOVELTY: 1-2 sentences explaining
+      the esthetic-restorative advantage of this technique].
+
+      {authors_summary}. The manuscript has not been published or submitted
+      elsewhere; all authors have approved the submission.
+
+      Sincerely,
+      {corresponding_author}
+
+  systematic-review:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract, Summary]
+        word_limit: 250  # TODO verify
+        required: true
+      - canonical: introduction
+        display: Introduction
+        aliases: [Introduction, Background]
+        word_limit: null
+        required: true
+      - canonical: methods
+        display: Materials and Methods
+        aliases: [Methods, Materials and Methods, Material and Methods, Search Strategy]
+        word_limit: null
+        required: true
+      - canonical: results
+        display: Results
+        aliases: [Results, Findings]
+        word_limit: null
+        required: true
+      - canonical: discussion
+        display: Discussion
+        aliases: [Discussion]
+        word_limit: null
+        required: true
+      - canonical: conclusions
+        display: Conclusions
+        aliases: [Conclusion, Conclusions]
+        word_limit: null
+        required: true
+      - canonical: clinical_significance
+        display: Clinical Significance
+        aliases: [Clinical Significance, Clinical Implications]
+        word_limit: null
+        required: true
+    abstract:
+      format: structured
+      subsections:
+        - Objectives
+        - Materials and Methods
+        - Results
+        - Conclusions
+        - Clinical Significance
+      word_limit: 250  # TODO verify
+    total_word_limit: null  # TODO verify — JERD typically does not cap systematic-review length
+    cover_letter_template: |
+      Dear {editor},
+
+      We submit for your consideration a systematic review titled "{title}",
+      which {methods_summary}. Our findings — {results_summary} — represent
+      [NOVELTY: 1-2 sentences explaining the gap this review fills in the
+      esthetic-restorative literature].
+
+      The protocol was registered with PROSPERO before data extraction
+      began [INSERT PROSPERO ID]. {authors_summary}. The manuscript has
+      not been published or submitted elsewhere; all authors have approved
+      the submission.
+
+      Sincerely,
+      {corresponding_author}
