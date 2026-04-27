@@ -76,6 +76,14 @@ def main():
         help="Editor name to fill into the cover letter "
              "(uses [EDITOR] placeholder if omitted)",
     )
+    ap.add_argument(
+        "--article-type",
+        default="research",
+        choices=["research", "case-report", "technique", "systematic-review"],
+        help="Article type for this manuscript (default: research). The "
+             "selected type determines which section structure, word "
+             "limits, and abstract format the journal expects.",
+    )
     args = ap.parse_args()
 
     if args.editor is not None and not args.editor.strip():
@@ -97,7 +105,8 @@ def main():
 
     # Load and validate inputs early so we fail fast.
     try:
-        cfg = load_journal(args.journal, config_dir=JOURNALS_DIR)
+        cfg = load_journal(args.journal, config_dir=JOURNALS_DIR,
+                           article_type=args.article_type)
     except JournalConfigError as e:
         sys.exit(str(e))
 

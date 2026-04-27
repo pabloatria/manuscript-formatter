@@ -125,3 +125,43 @@ def test_cli_out_dir_pointing_at_file_is_rejected(tmp_path):
     assert r.returncode != 0
     err = (r.stderr + r.stdout).lower()
     assert "not a directory" in err
+
+
+def test_cli_accepts_article_type_research(tmp_path):
+    cmd = [
+        PYTHON, str(CLI),
+        str(FIXT / "minimal_manuscript.docx"),
+        "--references", str(FIXT / "sample_zotero.json"),
+        "--journal", "jpd",
+        "--article-type", "research",
+        "--out-dir", str(tmp_path),
+    ]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    assert r.returncode == 0, f"CLI failed: {r.stderr}"
+
+
+def test_cli_default_article_type_is_research(tmp_path):
+    """v1 invocations (no --article-type) must keep working."""
+    cmd = [
+        PYTHON, str(CLI),
+        str(FIXT / "minimal_manuscript.docx"),
+        "--references", str(FIXT / "sample_zotero.json"),
+        "--journal", "jpd",
+        "--out-dir", str(tmp_path),
+    ]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    assert r.returncode == 0, f"CLI failed: {r.stderr}"
+
+
+def test_cli_invalid_article_type_rejected(tmp_path):
+    cmd = [
+        PYTHON, str(CLI),
+        str(FIXT / "minimal_manuscript.docx"),
+        "--references", str(FIXT / "sample_zotero.json"),
+        "--journal", "jpd",
+        "--article-type", "not-a-type",
+        "--out-dir", str(tmp_path),
+    ]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    assert r.returncode != 0
+    assert "article" in (r.stderr + r.stdout).lower()
