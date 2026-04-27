@@ -133,3 +133,32 @@ article_types:
     p.write_text(yaml_text, encoding="utf-8")
     with pytest.raises(JournalConfigError, match="placeholder|not yet"):
         load_journal("x", config_dir=tmp_path, article_type="case-report")
+
+
+def test_loader_rejects_stray_per_type_keys_at_journal_level(tmp_path):
+    """Catch the v1-muscle-memory authoring mistake of leaving sections:
+    or other per-type keys at the journal level."""
+    yaml_text = """\
+name: X
+abbreviation: X
+reference_style: x.csl
+title_page: {separate_file: false, required_blocks: []}
+figures: {embedded: false, legend_format: "", numbering: ""}
+guidelines: {font: "", font_size: 12, line_spacing: 2.0, margins_cm: 2.5, page_numbers: true}
+sections: [stray-from-v1-muscle-memory]   # MUST be rejected
+article_types:
+  research:
+    sections:
+      - canonical: abstract
+        display: Abstract
+        aliases: [Abstract]
+        word_limit: 250
+        required: true
+    abstract: {format: unstructured, word_limit: 250}
+    total_word_limit: 1000
+    cover_letter_template: ""
+"""
+    p = tmp_path / "stray.yaml"
+    p.write_text(yaml_text, encoding="utf-8")
+    with pytest.raises(JournalConfigError, match="per-type keys.*at journal level"):
+        load_journal("stray", config_dir=tmp_path, article_type="research")

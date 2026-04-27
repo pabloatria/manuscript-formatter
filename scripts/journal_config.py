@@ -56,6 +56,16 @@ def load_journal(slug: str, config_dir: Path,
             f"{slug}: missing journal-level keys: {sorted(missing_jl)}"
         )
 
+    # v1.1 migration guard: per-type keys must NOT live at the journal
+    # level (the most likely v1-muscle-memory authoring mistake when
+    # migrating a YAML).
+    stray = PER_TYPE_KEYS & set(cfg.keys())
+    if stray:
+        raise JournalConfigError(
+            f"{slug}: per-type keys {sorted(stray)} found at journal "
+            f"level (v1.1: move under article_types.<type>)"
+        )
+
     # Validate article_types: map exists
     if "article_types" not in cfg:
         raise JournalConfigError(
@@ -83,9 +93,8 @@ def load_journal(slug: str, config_dir: Path,
     # supported — populate later").
     if not type_block.get("sections"):
         raise JournalConfigError(
-            f"{slug}: article type {article_type!r} is a placeholder in "
-            f"this journal's config (sections: [] — not yet populated). "
-            f"Pick a different journal/type or add the missing block."
+            f"{slug}: article type {article_type!r} is not yet supported "
+            f"for this journal. Try a different --journal or --article-type."
         )
 
     # Validate per-type required keys
